@@ -3,19 +3,21 @@ import asyncio
 import os
 import sys
 
-#获取插件路径 加载backend中各个py文件
-try:
-    from helpers import get_homebrew_path,get_home_path,get_user
-    HOMEBREW_PATH = get_homebrew_path(get_home_path(get_user()))   
-    sys.path.append("{}/plugins/PowerControl/backend".format(HOMEBREW_PATH))
-    from config import logging
-    from gpu import gpuManager
-    from cpu import cpuManager
-    from fan import fanManager
-    from sysInfo import sysInfoManager
-    logging.info("PowerControl main.py")
-except Exception as e:
-    logging.error(e)
+
+HOMEBREW_PATH = '/home/gamer/homebrew'
+# from config import logging
+import config
+from gpu import gpuManager
+from cpu import cpuManager
+from fan import fanManager
+from sysInfo import sysInfoManager
+
+import decky_plugin
+
+logging = decky_plugin.logging
+
+logging.info("PowerControl main.py")
+
 
 class Plugin:
     async def _main(self):
