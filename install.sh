@@ -1,30 +1,25 @@
-#!/bin/bash
-
-# check if jq is installed
-if ! [ -x "$(command -v jq)" ]; then
-  echo 'Error: jq is not installed.' >&2
-  exit 1
+#!/usr/bin/bash
+# installs the following:
+# - PowerControl Decky Plugin
+if [ "$EUID" -eq 0 ]
+  then echo "Please do not run as root"
+  exit
 fi
 
-# Download latest release
-RELEASE=$(curl -s 'https://api.github.com/repos/mengmeet/PowerControl/releases/latest')
-RELEASE_VERSION=$(echo "$RELEASE" | jq -r '.tag_name')
-RELEASE_URL=$(echo "$RELEASE" | jq -r '.assets[0].browser_download_url')
-curl -L -o /tmp/PowerControl.tar.gz "$RELEASE_URL"
 
-echo "Installing PowerControl $RELEASE_VERSION"
+echo "removing previous install if it exists"
 
-# remove old version
-chmod -R 777 ${HOME}/homebrew/plugins
-rm -rf ${HOME}/homebrew/plugins/PowerControl
+cd $HOME
 
-# Extract
-tar -xzf /tmp/PowerControl.tar.gz -C ${HOME}/homebrew/plugins
+sudo rm -rf $HOME/homebrew/plugins/PowerControl
 
-# Cleanup
-rm -f /tmp/PowerControl.tar.gz
+echo "installing PowerControl plugin for TDP control"
+# download + install simple decky tdp
+curl -L $(curl -s https://api.github.com/repos/aarron-lee/PowerControl/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/PowerControl.tar.gz
+sudo tar -xzf PowerControl.tar.gz -C $HOME/homebrew/plugins
 
-echo "PowerControl $RELEASE_VERSION installed"
-
-# restart plugin_loader
+# install complete, remove build dir
+rm  $HOME/PowerControl.tar.gz
 sudo systemctl restart plugin_loader.service
+
+echo "Installation complete"
