@@ -25,7 +25,7 @@ import {
 import { VFC} from "react";
 import { FaSuperpowers } from "react-icons/fa";
 import { PluginManager} from "./util";
-import { GPUComponent,CPUComponent,SettingsComponent,FANComponent} from "./components";
+import { SettingsComponent,FANComponent} from "./components";
 const Content: VFC<{}> = ({}) => {
   return (
       <div>
@@ -34,8 +34,6 @@ const Content: VFC<{}> = ({}) => {
         </PanelSectionRow>}
         {!PluginManager.isIniting()&&<div>
           <SettingsComponent/>
-          <CPUComponent />
-          <GPUComponent />
           <FANComponent />
         </div>}
       </div>
