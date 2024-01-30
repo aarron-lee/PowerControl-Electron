@@ -2,9 +2,10 @@ import subprocess
 import asyncio
 import os
 import sys
+import decky_plugin
 
 
-HOMEBREW_PATH = '/home/gamer/homebrew'
+HOMEBREW_PATH = f'{decky_plugin.DECKY_USER_HOME}/homebrew'
 # from config import logging
 import config
 from gpu import gpuManager
