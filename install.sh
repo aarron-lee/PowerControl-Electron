@@ -14,7 +14,7 @@ cd $HOME
 sudo rm -rf $HOME/homebrew/plugins/PowerControl
 
 echo "installing PowerControl plugin for TDP control"
-# download + install simple decky tdp
+# download + install plugin
 curl -L $(curl -s https://api.github.com/repos/aarron-lee/PowerControl/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/PowerControl.tar.gz
 sudo tar -xzf PowerControl.tar.gz -C $HOME/homebrew/plugins
 
