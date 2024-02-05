@@ -26,6 +26,43 @@ try:
 except Exception as e:
     logging.error(f"路径配置异常|{e}")
 
+#TDP上限配置
+try:
+    TDP_LIMIT_CONFIG_PRODUCT={
+        "AIR":18,
+        "AIR 1S":25,
+        "AIR Pro":20,
+        "AIR Plus":30,
+        "AYANEO 2":30,
+        "GEEK":30,
+        "GEEK 1S":30,
+        "AYANEO 2S":30,
+        "ONEXPLAYER Mini":30,
+        "NEXT":35,
+        "ONEXPLAYER Mini Pro":40,
+        "AOKZOE A1 AR07":40,
+        "ONEXPLAYER 2 ARP23":45,
+        "G1619-04":45,     #GPD WINMAX2
+        "G1618-04":45,     #GPD WIN4
+        "ROG Ally RC71L_RC71L":40,
+    }
+    TDP_LIMIT_CONFIG_CPU={
+        "AMD Ryzen 7 7735HS with Radeon Graphics":45,
+        "AMD Ryzen 7 7735U with Radeon Graphics":40,
+        "AMD Ryzen 5 5560U with Radeon Graphics":18,
+        "AMD Ryzen 7 5700U with Radeon Graphics":28,
+        "AMD Ryzen 7 5800U with Radeon Graphics":30,
+        "AMD Ryzen 7 5825U with Radeon Graphics":30,
+        "AMD Ryzen 7 6800U with Radeon Graphics":40,
+        "AMD Ryzen 7 4800U with Radeon Graphics":25,
+        "AMD Ryzen 5 4500U with Radeon Graphics":25,
+        "AMD Athlon Silver 3050e with Radeon Graphics":12,
+        "AMD Ryzen Z1 Extreme":40,
+        "AMD Ryzen 7 7840U w/ Radeon 780M Graphics": 40,
+    }
+except Exception as e:
+    logging.error(f"TDP配置异常|{e}")
+
 #设备信息获取配置
 try:
     command="sudo sh {} get_cpuID ".format(SH_PATH)
