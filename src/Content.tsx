@@ -15,11 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { FC } from "react";
+import { FC, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { PluginManager } from "./util";
 import { SettingsComponent, FANComponent } from "./components";
+import { AppDispatch } from "./redux-modules/store";
+import { fanSlice } from "./redux-modules/fanSlice";
 
 const Content: FC<{}> = ({}) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fanSlice.actions.initialLoad());
+  }, []);
+
   return (
     <div>
       {PluginManager.isIniting() && "Loading"}
