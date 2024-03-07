@@ -21,12 +21,18 @@ import { PluginManager } from "./util";
 import { SettingsComponent, FANComponent } from "./components";
 import { AppDispatch } from "./redux-modules/store";
 import { fanSlice } from "./redux-modules/fanSlice";
+import { powerControlPluginListener } from "./pluginListeners";
 
 const Content: FC<{}> = ({}) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(fanSlice.actions.initialLoad());
+    const unsubscribe = powerControlPluginListener();
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (

@@ -1,17 +1,3 @@
-// import {
-//   PanelSection,
-//   PanelSectionRow,
-//   Field,
-//   ButtonItem,
-//   showModal,
-//   ModalRoot,
-//   DialogButton,
-//   TextField,
-//   SliderField,
-//   Dropdown,
-//   DropdownOption,
-//   Focusable,
-// } from "decky-frontend-lib";
 import { useEffect, useState, useRef, FC } from "react";
 import {
   Settings,
@@ -45,7 +31,8 @@ import {
   useDisclosure,
   ModalFooter,
 } from "@chakra-ui/react";
-var fanRPMIntervalID: any;
+import FanRpm from "./FanRpm";
+
 var fanDisplayIntervalID: any;
 const totalLines = 9;
 const pointBlockDis = 5;
@@ -394,42 +381,6 @@ const FANDisplayComponent: FC = () => {
 };
 
 //FANRPM模块
-const FANRPMComponent: FC = () => {
-  const [fanrpm, setFanRPM] = useState<number>(0);
-  const refresh = async () => {
-    setFanRPM(FanControl.fanRPM);
-  };
-  const dismount = () => {
-    if (fanRPMIntervalID != null) {
-      clearInterval(fanRPMIntervalID);
-    }
-  };
-  useEffect(() => {
-    if (fanRPMIntervalID != null) {
-      clearInterval(fanRPMIntervalID);
-    }
-    fanRPMIntervalID = setInterval(() => {
-      refresh();
-    }, 1000);
-    PluginManager.listenUpdateComponent(
-      ComponentName.FAN_RPM,
-      [ComponentName.FAN_RPM],
-      (_ComponentName, updateType) => {
-        switch (updateType) {
-          case UpdateType.DISMOUNT: {
-            dismount();
-            break;
-          }
-        }
-      }
-    );
-  }, []);
-  return (
-    <div id={localizationManager.getString(localizeStrEnum.FAN_SPEED)}>
-      {fanrpm + " RPM"}
-    </div>
-  );
-};
 
 const FANCreateProfileComponent: FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -981,7 +932,7 @@ export function FANComponent() {
         <>
           <FANSelectProfileComponent />
           <FANDisplayComponent />
-          <FANRPMComponent />
+          <FanRpm />
           <FANCreateProfileComponent />
         </>
       )}

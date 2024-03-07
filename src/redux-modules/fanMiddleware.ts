@@ -1,4 +1,7 @@
 import { SETTINGS_KEY } from "./constants";
+import { fanSlice } from "./fanSlice";
+
+const MUTATING_ACTION_TYPES = [fanSlice.actions.setEnabled.type];
 
 const saveToLocalStorage = (state: any) => {
   const { fan } = state;
@@ -13,5 +16,8 @@ export const saveFanSettingsMiddleware =
     const result = next(action);
 
     const state = store.getState();
-    saveToLocalStorage(state);
+
+    if (MUTATING_ACTION_TYPES.includes(action.type)) {
+      saveToLocalStorage(state);
+    }
   };

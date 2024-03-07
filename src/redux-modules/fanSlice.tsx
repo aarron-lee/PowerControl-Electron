@@ -4,11 +4,13 @@ import { SETTINGS_KEY } from "./constants";
 
 type FanState = {
   enabled: boolean;
+  currentRpm: number;
   fanSettings: { [name: string]: any };
 };
 
 const initialState: FanState = {
   enabled: true,
+  currentRpm: 0,
   fanSettings: {},
 };
 
@@ -32,10 +34,17 @@ export const fanSlice = createSlice({
     setEnabled: (state, action: PayloadAction<boolean>) => {
       state.enabled = action.payload;
     },
+    setCurrentRpm: (state, action: PayloadAction<number>) => {
+      state.currentRpm = action.payload;
+    },
   },
   extraReducers: (builder) => {},
 });
 
 export const selectFanEnabled = (store: RootState) => {
   return store.fan.enabled;
+};
+
+export const selectCurrentRpm = (store: RootState) => {
+  return store.fan.currentRpm;
 };
