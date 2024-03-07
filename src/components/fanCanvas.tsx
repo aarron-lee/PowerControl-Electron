@@ -32,6 +32,7 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       canvas.width,
       canvas.height
     );
+    console.log("onPointerDown", realEvent, fanClickPos);
     pointerDownPos.current = [realEvent.layerX, realEvent.layerY];
     pointerDownTime.current = Date.parse(new Date().toString());
     canvas.onPointerDown?.call(canvas, fanClickPos);
@@ -45,6 +46,7 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       canvas.width,
       canvas.height
     );
+    console.log("onPointerUp", realEvent, fanClickPos);
     pointerUpPos.current = [realEvent.layerX, realEvent.layerY];
     pointerUpTime.current = Date.parse(new Date().toString());
     canvas.onPointerUp?.call(canvas, fanClickPos);

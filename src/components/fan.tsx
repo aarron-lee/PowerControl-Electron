@@ -33,11 +33,17 @@ import {
   FormLabel,
   Input,
   Modal,
+  ModalCloseButton,
   ModalContent,
+  ModalBody,
   ModalHeader,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
   ModalOverlay,
   Slider,
   useDisclosure,
+  ModalFooter,
 } from "@chakra-ui/react";
 var fanRPMIntervalID: any;
 var fanDisplayIntervalID: any;
@@ -616,6 +622,7 @@ function FANCretateProfileModelComponent({
   }, []);
 
   function onPointerShortPress(shortPressPos: fanPosition): void {
+    console.log(shortPressPos);
     switch (fanMode) {
       case FANMODE.NOCONTROL: {
       }
@@ -677,6 +684,7 @@ function FANCretateProfileModelComponent({
   }
 
   function onPointerLongPress(longPressPos: fanPosition): void {
+    console.log(longPressPos);
     switch (fanMode) {
       case FANMODE.NOCONTROL: {
         break;
@@ -771,182 +779,176 @@ function FANCretateProfileModelComponent({
     }
   }
   return (
-    <div>
-      <h1
-        style={{
-          marginBlockEnd: "5px",
-          marginBlockStart: "-15px",
-          fontSize: 25,
-        }}
-      >
-        <div style={{ width: 180, display: "inline-block" }}>
+    <>
+      <ModalHeader>Create Profile</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <FormLabel>
           {localizationManager.getString(localizeStrEnum.FAN_PROFILE_NAME)}
-        </div>
-        <div style={{ width: 250, height: 20, display: "inline-block" }}>
-          <Input
-            type="text"
-            value={profileName}
-            onChange={(e) => {
-              setProfileName(e.target.value);
-              console.log(e.target.value);
-            }}
-          />
-        </div>
-      </h1>
-      <div
-        style={{
-          marginBlockEnd: "0px",
-          marginBlockStart: "0px",
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          padding: "8px 0",
-        }}
-      >
-        <FanCanvas
-          width={300}
-          height={300}
-          style={{
-            width: "300px",
-            height: "300px",
-            padding: "0px",
-            border: "1px solid #1a9fff",
-            // @ts-ignore
-            "background-color": "#1a1f2c",
-            "border-radius": "4px",
-          }} //onClick={(e: any) => onClickCanvas(e)}
-          //onPointerDown={(e:any) => onPointerDown(e)}
-          //onPointerMove={(e:any) => onPointerMove(e)}
-          //onPointerUp={(e:any) => onPointerUp(e)}
-          //onPointerDown={(e:fanPosition) => {onPointerDown(e)}}
-          //onPointerMove={(e:fanPosition) => {onPointerMove(e)}}
-          //onPointerUp={(e:fanPosition) => {onPointerUp(e)}}
-          onPointerShortPress={(e: fanPosition) => {
-            onPointerShortPress(e);
-          }}
-          onPointerLongPress={(e: fanPosition) => {
-            onPointerLongPress(e);
-          }}
-          onPointerDragDown={(e: fanPosition) => {
-            return onPointerDragDown(e)!!;
-          }}
-          onPointerDraging={(e: fanPosition) => {
-            onPointerDraging(e);
-          }}
-          initDraw={(f: any) => {
-            initDraw(f);
+        </FormLabel>
+        <Input
+          type="text"
+          value={profileName}
+          onChange={(e) => {
+            setProfileName(e.target.value);
+            console.log(e.target.value);
           }}
         />
+
+        <Dropdown
+          label={localizationManager.getString(localizeStrEnum.FAN_MODE)}
+          selectedValue={fanMode}
+          options={[
+            {
+              notchIndex: FANMODE.NOCONTROL,
+              label: `${localizationManager.getString(
+                localizeStrEnum.NOT_CONTROLLED
+              )}`,
+              value: FANMODE.NOCONTROL,
+            },
+            {
+              notchIndex: FANMODE.FIX,
+              label: `${localizationManager.getString(localizeStrEnum.FIXED)}`,
+              value: FANMODE.FIX,
+            },
+            {
+              notchIndex: FANMODE.CURVE,
+              label: `${localizationManager.getString(localizeStrEnum.CURVE)}`,
+              value: FANMODE.CURVE,
+            },
+          ]}
+          onChange={(value: number) => {
+            setFanMode(value);
+          }}
+        />
+        {fanMode == FANMODE.FIX && (
+          <>
+            <FormLabel>
+              {localizationManager.getString(localizeStrEnum.FAN_SPEED_PERCENT)}
+            </FormLabel>
+            <Slider
+              value={fixSpeed}
+              step={1}
+              max={100}
+              min={0}
+              onChange={(value: number) => {
+                setFixSpeed(value);
+              }}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </>
+        )}
+        {fanMode == FANMODE.CURVE && (
+          <>
+            <FormLabel>
+              {localizationManager.getString(localizeStrEnum.SENSOR_TEMP)}
+            </FormLabel>
+            <Slider
+              value={selPointTemp}
+              // valueSuffix={"°C"}
+              // showValue={true}
+              // layout={"inline"}
+              // disabled={!selectedPoint.current}
+              step={1}
+              max={fanPosition.tempMax}
+              min={0}
+              onChange={(value: number) => {
+                setSelPointTemp(value);
+              }}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </>
+        )}
+        {fanMode == FANMODE.CURVE && (
+          <>
+            <FormLabel>
+              {localizationManager.getString(localizeStrEnum.FAN_SPEED_PERCENT)}
+            </FormLabel>
+            <Slider
+              value={selPointSpeed}
+              // valueSuffix={"%"}
+              // showValue={true}
+              // layout={"inline"}
+              // disabled={!selectedPoint.current}
+              step={1}
+              max={fanPosition.fanMax}
+              min={0}
+              onChange={(value: number) => {
+                setSelPointSpeed(value);
+              }}
+            >
+              {" "}
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </>
+        )}
         <div>
-          <Dropdown
-            label={localizationManager.getString(localizeStrEnum.FAN_MODE)}
-            selectedValue={fanMode}
-            options={[
-              {
-                notchIndex: FANMODE.NOCONTROL,
-                label: `${localizationManager.getString(
-                  localizeStrEnum.NOT_CONTROLLED
-                )}`,
-                value: FANMODE.NOCONTROL,
-              },
-              {
-                notchIndex: FANMODE.FIX,
-                label: `${localizationManager.getString(
-                  localizeStrEnum.FIXED
-                )}`,
-                value: FANMODE.FIX,
-              },
-              {
-                notchIndex: FANMODE.CURVE,
-                label: `${localizationManager.getString(
-                  localizeStrEnum.CURVE
-                )}`,
-                value: FANMODE.CURVE,
-              },
-            ]}
-            onChange={(value: number) => {
-              setFanMode(value);
+          <FanCanvas
+            width={300}
+            height={300}
+            style={{
+              width: "300px",
+              height: "300px",
+              padding: "0px",
+              border: "1px solid #1a9fff",
+              // @ts-ignore
+              "background-color": "#1a1f2c",
+              "border-radius": "4px",
+            }} //onClick={(e: any) => onClickCanvas(e)}
+            //onPointerDown={(e:any) => onPointerDown(e)}
+            //onPointerMove={(e:any) => onPointerMove(e)}
+            //onPointerUp={(e:any) => onPointerUp(e)}
+            //onPointerDown={(e:fanPosition) => {onPointerDown(e)}}
+            //onPointerMove={(e:fanPosition) => {onPointerMove(e)}}
+            //onPointerUp={(e:fanPosition) => {onPointerUp(e)}}
+            onPointerShortPress={(e: fanPosition) => {
+              onPointerShortPress(e);
+            }}
+            onPointerLongPress={(e: fanPosition) => {
+              onPointerLongPress(e);
+            }}
+            onPointerDragDown={(e: fanPosition) => {
+              return onPointerDragDown(e)!!;
+            }}
+            onPointerDraging={(e: fanPosition) => {
+              onPointerDraging(e);
+            }}
+            initDraw={(f: any) => {
+              initDraw(f);
             }}
           />
-          {fanMode == FANMODE.FIX && (
-            <>
-              <FormLabel>
-                {localizationManager.getString(
-                  localizeStrEnum.FAN_SPEED_PERCENT
-                )}
-              </FormLabel>
-              <Slider
-                value={fixSpeed}
-                step={1}
-                max={100}
-                min={0}
-                onChange={(value: number) => {
-                  setFixSpeed(value);
-                }}
-              />
-            </>
-          )}
-          {fanMode == FANMODE.CURVE && (
-            <>
-              <FormLabel>
-                {localizationManager.getString(localizeStrEnum.SENSOR_TEMP)}
-              </FormLabel>
-              <Slider
-                value={selPointTemp}
-                // valueSuffix={"°C"}
-                // showValue={true}
-                // layout={"inline"}
-                // disabled={!selectedPoint.current}
-                step={1}
-                max={fanPosition.tempMax}
-                min={0}
-                onChange={(value: number) => {
-                  setSelPointTemp(value);
-                }}
-              />
-            </>
-          )}
-          {fanMode == FANMODE.CURVE && (
-            <>
-              <FormLabel>
-                {localizationManager.getString(
-                  localizeStrEnum.FAN_SPEED_PERCENT
-                )}
-              </FormLabel>
-              <Slider
-                value={selPointSpeed}
-                // valueSuffix={"%"}
-                // showValue={true}
-                // layout={"inline"}
-                // disabled={!selectedPoint.current}
-                step={1}
-                max={fanPosition.fanMax}
-                min={0}
-                onChange={(value: number) => {
-                  setSelPointSpeed(value);
-                }}
-              />
-            </>
-          )}
         </div>
-      </div>
-
-      <Button
-        onClick={() => {
-          if (onCreateProfile()) {
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          onClick={() => {
+            if (onCreateProfile()) {
+              closeModal();
+            }
+          }}
+        >
+          {localizationManager.getString(localizeStrEnum.CREATE)}
+        </Button>
+        <Button
+          onClick={() => {
             closeModal();
-          }
-        }}
-      >
-        {localizationManager.getString(localizeStrEnum.CREATE)}
-      </Button>
-      <Button
-        onClick={() => {
-          closeModal();
-        }}
-      >
-        {localizationManager.getString(localizeStrEnum.CANCEL)}
-      </Button>
-    </div>
+          }}
+        >
+          {localizationManager.getString(localizeStrEnum.CANCEL)}
+        </Button>
+      </ModalFooter>
+    </>
   );
 }
 
