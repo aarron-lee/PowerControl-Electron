@@ -9,13 +9,29 @@ import { Backend } from "./backend";
 import { localizationManager } from "../i18n";
 import { Settings } from "./settings";
 import { calPointInLine, fanPosition } from "./position";
-import serverAPI from "./serverAPI";
+import serverAPI from "./serverApi";
 
+type ActiveAppChangedHandler = (newAppId: string, oldAppId: string) => void;
 type ComponentUpdateHandler = (
   componentsName: ComponentName,
   updateType: UpdateType
 ) => void;
 type UnregisterFn = () => void;
+
+export const DEFAULT_APP = "0";
+export class RunningApps {
+  private static listeners: ActiveAppChangedHandler[] = [];
+  private static lastAppId: string = DEFAULT_APP;
+  private static intervalId: any;
+
+  static active() {
+    return DEFAULT_APP;
+  }
+
+  static active_appInfo() {
+    return null;
+  }
+}
 
 export class FanControl {
   private static intervalId: any;

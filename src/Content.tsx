@@ -27,6 +27,7 @@ const Content: FC<{}> = ({}) => {
         <div>
           {/* <SettingsComponent />
           <FANComponent /> */}
+          hello world
         </div>
       )}
     </div>

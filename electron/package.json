@@ -1,0 +1,35 @@
+{
+  "name": "com.aarron-lee.powercontrol-electron",
+  "author": {
+    "name": "Aarron L"
+  },
+  "homepage": "https://github.com/aarron-lee/PowerControl-Electron",
+  "description": "PowerControl Fork Frontend",
+  "license": "",
+  "version": "0.0.1",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "electron-packager": "^17.1.2"
+  },
+  "scripts": {
+    "postinstall": "./node_modules/.bin/electron-builder install-app-deps",
+    "start": "./node_modules/.bin/electron .",
+    "build": "./node_modules/.bin/electron-builder build --linux"
+  },
+  "build": {
+    "appId": "com.aarron-lee.powercontrol-electron",
+    "productName": "PowerControl Electron",
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "files": [
+    "static/**/*",
+    "!**/node_modules/*",
+    "!**/dist/*",
+    "!**/src/*",
+    "index.html"
+  ]
+}
