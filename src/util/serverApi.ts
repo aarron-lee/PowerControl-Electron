@@ -1,6 +1,7 @@
 const plugin_name = "PowerControl";
 
-async function call_plugin_method(method_name, arg_object = {}) {
+async function callPluginMethod(method_name: string, arg_object = {}) {
+  console.log(method_name, plugin_name, arg_object);
   if (plugin_name == undefined)
     throw new Error(
       "Plugin methods can only be called from inside plugins (duh)"
@@ -23,13 +24,28 @@ async function call_plugin_method(method_name, arg_object = {}) {
     }
   );
 
-  const dta = await response.json();
+  console.log(method_name, token, response);
+
+  let dta;
+
+  if (response?.ok && response instanceof Promise) {
+    dta = await response.json();
+  } else {
+    return response;
+  }
+
+  if (!dta) {
+    throw new Error(`missing dta ${dta}`);
+  }
+
+  console.log(dta);
+
   if (!dta.success) throw dta.result;
   return dta.result;
 }
 
-const serverAPI = {
-  callPluginMethod: call_plugin_method,
+export const serverAPI = {
+  callPluginMethod,
 };
 
 export default serverAPI;

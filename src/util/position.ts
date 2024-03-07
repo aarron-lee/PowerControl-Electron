@@ -55,6 +55,7 @@ export class fanPosition {
     return new fanPosition(temperature, fanRPMpercent);
   }
 }
+
 /*
 export class canvasPosition {
   @JsonProperty()

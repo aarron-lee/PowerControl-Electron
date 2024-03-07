@@ -1,19 +1,14 @@
 import { APPLYTYPE, FANMODE } from "./enum";
 import { FanControl } from "./pluginMain";
 import { Settings } from "./settings";
+import serverAPI from "./serverApi";
 
 export class BackendData {
-  private serverAPI: any;
   private fanMaxRPM = 0;
   private has_fanMaxRPM = false;
   private fanIsAdapted = false;
-  public async init(serverAPI: any) {
-    this.serverAPI = serverAPI;
-
-    await this.serverAPI!.callPluginMethod<{}, number>(
-      "get_fanMAXRPM",
-      {}
-    ).then((res) => {
+  public async init() {
+    await serverAPI!.callPluginMethod("get_fanMAXRPM", {}).then((res) => {
       if (res.success) {
         this.fanMaxRPM = res.result;
         this.has_fanMaxRPM = true;
@@ -21,10 +16,7 @@ export class BackendData {
         this.fanMaxRPM = 1;
       }
     });
-    await this.serverAPI!.callPluginMethod<{}, boolean>(
-      "get_fanIsAdapted",
-      {}
-    ).then((res) => {
+    await serverAPI!.callPluginMethod("get_fanIsAdapted", {}).then((res) => {
       if (res.success) {
         this.fanIsAdapted = res.result;
       } else {
@@ -47,38 +39,31 @@ export class BackendData {
 
   public async getFanRPM() {
     var fanPRM: number;
-    await this.serverAPI!.callPluginMethod<{}, number>("get_fanRPM", {}).then(
-      (res) => {
-        if (res.success) {
-          fanPRM = res.result;
-        } else {
-          fanPRM = 0;
-        }
+    await serverAPI!.callPluginMethod("get_fanRPM", {}).then((res) => {
+      if (res.success) {
+        fanPRM = res.result;
+      } else {
+        fanPRM = 0;
       }
-    );
+    });
     return fanPRM!!;
   }
 
   public async getFanTemp() {
     var fanTemp: number;
-    await this.serverAPI!.callPluginMethod<{}, number>("get_fanTemp", {}).then(
-      (res) => {
-        if (res.success) {
-          fanTemp = res.result / 1000;
-        } else {
-          fanTemp = -1;
-        }
+    await serverAPI!.callPluginMethod("get_fanTemp", {}).then((res) => {
+      if (res.success) {
+        fanTemp = res.result / 1000;
+      } else {
+        fanTemp = -1;
       }
-    );
+    });
     return fanTemp!!;
   }
 
   public async getFanIsAuto() {
     var fanIsAuto: boolean;
-    await this.serverAPI!.callPluginMethod<{}, boolean>(
-      "get_fanIsAuto",
-      {}
-    ).then((res) => {
+    await serverAPI!.callPluginMethod("get_fanIsAuto", {}).then((res) => {
       if (res.success) {
         fanIsAuto = res.result;
       } else {
@@ -90,23 +75,21 @@ export class BackendData {
 }
 
 export class Backend {
-  private static serverAPI: any;
   public static data: BackendData;
-  public static async init(serverAPI: any) {
-    this.serverAPI = serverAPI;
+  public static async init() {
     this.data = new BackendData();
-    await this.data.init(serverAPI);
+    await this.data.init();
   }
 
   private static applyFanAuto(auto: boolean) {
-    this.serverAPI!.callPluginMethod("set_fanAuto", { value: auto });
+    serverAPI!.callPluginMethod("set_fanAuto", { value: auto });
   }
   private static applyFanPercent(percent: number) {
-    this.serverAPI!.callPluginMethod("set_fanPercent", { value: percent });
+    serverAPI!.callPluginMethod("set_fanPercent", { value: percent });
   }
   public static throwSuspendEvt() {
     console.log("throwSuspendEvt");
-    this.serverAPI!.callPluginMethod("receive_suspendEvent", {});
+    serverAPI!.callPluginMethod("receive_suspendEvent", {});
   }
 
   public static applySettings = (applyTarget: string) => {

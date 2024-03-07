@@ -9,7 +9,6 @@ import { Backend } from "./backend";
 import { localizationManager } from "../i18n";
 import { Settings } from "./settings";
 import { calPointInLine, fanPosition } from "./position";
-import serverAPI from "./serverApi";
 
 type ActiveAppChangedHandler = (newAppId: string, oldAppId: string) => void;
 type ComponentUpdateHandler = (
@@ -23,6 +22,32 @@ export class RunningApps {
   private static listeners: ActiveAppChangedHandler[] = [];
   private static lastAppId: string = DEFAULT_APP;
   private static intervalId: any;
+
+  private static pollActive() {
+    const newApp = RunningApps.active();
+    if (this.lastAppId != newApp) {
+      this.listeners.forEach((h) => h(newApp, this.lastAppId));
+    }
+    this.lastAppId = newApp;
+  }
+
+  static register() {
+    if (this.intervalId == undefined)
+      this.intervalId = setInterval(() => this.pollActive(), 100);
+  }
+
+  static unregister() {
+    if (this.intervalId != undefined) clearInterval(this.intervalId);
+
+    this.listeners.splice(0, this.listeners.length);
+  }
+
+  static listenActiveChange(fn: ActiveAppChangedHandler): UnregisterFn {
+    const idx = this.listeners.push(fn) - 1;
+    return () => {
+      this.listeners.splice(idx, 1);
+    };
+  }
 
   static active() {
     return DEFAULT_APP;
@@ -184,8 +209,8 @@ export class PluginManager {
   private static suspendEndHook: any;
   public static register = async () => {
     PluginManager.state = PluginState.INIT;
-    await Backend.init(serverAPI);
-    await localizationManager.init(serverAPI);
+    await Backend.init();
+    await localizationManager.init();
     FanControl.register();
     Settings.loadSettingsFromLocalStorage();
     Backend.applySettings(APPLYTYPE.SET_ALL);
