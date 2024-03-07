@@ -1,7 +1,7 @@
 import { useEffect, useState, FC } from "react";
 import { Settings, PluginManager, ComponentName, UpdateType } from "../util";
 import { localizeStrEnum, localizationManager } from "../i18n";
-import Toggle from "./Toggle";
+import Toggle from "./ui/Toggle";
 
 const SettingsEnableComponent: FC = () => {
   const [enable, setEnable] = useState<boolean>(Settings.ensureEnable());
