@@ -11,6 +11,10 @@
     "electron-build": "rm -rf ./electron/static/build && mkdir -p ./electron/static/ && vite build && cp -rf ./dist ./electron/static/build && sed -i 's\\/assets\\./assets\\g' ./electron/static/build/index.html"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^11.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript-json-serializer": "^6.0.1"

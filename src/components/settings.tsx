@@ -1,9 +1,9 @@
-import { ToggleField, Marquee } from "decky-frontend-lib";
-import { useEffect, useState, VFC } from "react";
+import { useEffect, useState, FC } from "react";
 import { Settings, PluginManager, ComponentName, UpdateType } from "../util";
 import { localizeStrEnum, localizationManager } from "../i18n";
+import Toggle from "./Toggle";
 
-const SettingsEnableComponent: VFC = () => {
+const SettingsEnableComponent: FC = () => {
   const [enable, setEnable] = useState<boolean>(Settings.ensureEnable());
   const refresh = () => {
     setEnable(Settings.ensureEnable());
@@ -30,7 +30,7 @@ const SettingsEnableComponent: VFC = () => {
   }, []);
   return (
     <div>
-      <ToggleField
+      <Toggle
         label={localizationManager.getString(localizeStrEnum.ENABLE_SETTINGS)}
         checked={enable}
         onChange={(enabled: boolean) => {
@@ -41,85 +41,10 @@ const SettingsEnableComponent: VFC = () => {
   );
 };
 
-const SettingsPerAppComponent: VFC = () => {
-  const [override, setOverWrite] = useState<boolean>(Settings.appOverWrite());
-
-  const [show, setShow] = useState<boolean>(Settings.ensureEnable());
-  const hide = (ishide: boolean) => {
-    setShow(!ishide);
-  };
-  const refresh = () => {
-    setOverWrite(Settings.appOverWrite());
-  };
-  //listen Settings
-  useEffect(() => {
-    PluginManager.listenUpdateComponent(
-      ComponentName.SET_PERAPP,
-      [ComponentName.SET_PERAPP],
-      (_ComponentName, updateType: string) => {
-        switch (updateType) {
-          case UpdateType.UPDATE:
-            refresh();
-            //console.log(`fn:invoke refresh:${updateType} ${UpdateType.UPDATE}`)
-            break;
-          case UpdateType.SHOW:
-            hide(false);
-            //console.log(`fn:invoke show:${updateType} ${UpdateType.SHOW}`)
-            break;
-          case UpdateType.HIDE:
-            hide(true);
-            //console.log(`fn:invoke hide:${updateType} ${UpdateType.HIDE}`)
-            break;
-        }
-      }
-    );
-  }, []);
-  return (
-    <div>
-      {show && (
-        <ToggleField
-          label={localizationManager.getString(
-            localizeStrEnum.USE_PERGAME_PROFILE
-          )}
-          description={
-            <div style={{ display: "flex", justifyContent: "left" }}>
-              <div style={{ lineHeight: "20px", whiteSpace: "pre" }}>
-                {localizationManager.getString(localizeStrEnum.USING) +
-                  (override ? "『" : "")}
-              </div>
-              <Marquee
-                play={true}
-                fadeLength={10}
-                delay={1}
-                style={{
-                  maxWidth: "100px",
-                  lineHeight: "20px",
-                  whiteSpace: "pre",
-                }}
-              >
-                {`${localizationManager.getString(localizeStrEnum.DEFAULT)}`}
-              </Marquee>
-              <div style={{ lineHeight: "20px", whiteSpace: "pre" }}>
-                {(override ? "』" : "") +
-                  localizationManager.getString(localizeStrEnum.PROFILE)}
-              </div>
-            </div>
-          }
-          checked={override}
-          onChange={(override: boolean) => {
-            Settings.setOverWrite(override);
-          }}
-        />
-      )}
-    </div>
-  );
-};
-
-export const SettingsComponent: VFC = () => {
+export const SettingsComponent: FC = () => {
   return (
     <div>
       <SettingsEnableComponent />
-      <SettingsPerAppComponent />
     </div>
   );
 };

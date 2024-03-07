@@ -17,7 +17,10 @@
 
 import { FC } from "react";
 import { PluginManager } from "./util";
-// import { SettingsComponent, FANComponent } from "./components";
+import {
+  SettingsComponent,
+  //  FANComponent
+} from "./components";
 
 const Content: FC<{}> = ({}) => {
   return (
@@ -25,9 +28,8 @@ const Content: FC<{}> = ({}) => {
       {PluginManager.isIniting() && "Loading"}
       {!PluginManager.isIniting() && (
         <div>
-          {/* <SettingsComponent />
-          <FANComponent /> */}
-          hello world
+          <SettingsComponent />
+          {/* <FANComponent /> */}
         </div>
       )}
     </div>
