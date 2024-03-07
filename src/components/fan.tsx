@@ -622,7 +622,6 @@ function FANCretateProfileModelComponent({
   }, []);
 
   function onPointerShortPress(shortPressPos: fanPosition): void {
-    console.log(shortPressPos);
     switch (fanMode) {
       case FANMODE.NOCONTROL: {
       }
@@ -684,7 +683,6 @@ function FANCretateProfileModelComponent({
   }
 
   function onPointerLongPress(longPressPos: fanPosition): void {
-    console.log(longPressPos);
     switch (fanMode) {
       case FANMODE.NOCONTROL: {
         break;

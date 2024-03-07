@@ -24,16 +24,24 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   useEffect(() => {
     canvas.initDraw?.call(canvas, canvasRef.current);
   }, []);
+
+  // function getMousePos(canvas, evt) {
+  //   var rect = canvas.getBoundingClientRect();
+  //   return {
+  //     x: evt.clientX - rect.left,
+  //     y: evt.clientY - rect.top
+  //   };
+  // }
+
   function onPointerDown(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
-    console.log("onPointerDown", realEvent, fanClickPos);
-    pointerDownPos.current = [realEvent.layerX, realEvent.layerY];
+    pointerDownPos.current = [realEvent.offsetX, realEvent.offsetY];
     pointerDownTime.current = Date.parse(new Date().toString());
     canvas.onPointerDown?.call(canvas, fanClickPos);
     onDragDown(e);
@@ -41,13 +49,12 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   function onPointerUp(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
-    console.log("onPointerUp", realEvent, fanClickPos);
-    pointerUpPos.current = [realEvent.layerX, realEvent.layerY];
+    pointerUpPos.current = [realEvent.offsetX, realEvent.offsetY];
     pointerUpTime.current = Date.parse(new Date().toString());
     canvas.onPointerUp?.call(canvas, fanClickPos);
     //call PointPressEvent
@@ -71,8 +78,8 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   function onPointerMove(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
@@ -89,8 +96,8 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   function onPointerShortPress(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
@@ -101,8 +108,8 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   function onDragDown(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
@@ -114,8 +121,8 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   function onDraging(e: any): void {
     const realEvent: any = e.nativeEvent;
     const fanClickPos = fanPosition.createFanPosByCanPos(
-      realEvent.layerX,
-      realEvent.layerY,
+      realEvent.offsetX,
+      realEvent.offsetY,
       canvas.width,
       canvas.height
     );
