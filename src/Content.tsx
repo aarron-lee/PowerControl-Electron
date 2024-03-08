@@ -16,16 +16,22 @@
  */
 
 import { FC, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PluginManager } from "./util";
 import { SettingsComponent, FANComponent } from "./components";
 import { AppDispatch } from "./redux-modules/store";
-import { fanSlice } from "./redux-modules/fanSlice";
+import { fanSlice, selectInitialLoad } from "./redux-modules/fanSlice";
 import { powerControlPluginListener } from "./pluginListeners";
 import serverAPI from "./util/serverApi";
 
 const Content: FC<{}> = ({}) => {
+  const initialLoading = useSelector(selectInitialLoad);
+
   useAppInitialize();
+
+  if (initialLoading) {
+    return null;
+  }
 
   return (
     <div>
@@ -44,7 +50,7 @@ function useAppInitialize() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fanSlice.actions.initialLoad());
+    dispatch(fanSlice.actions.loadLocalStorage());
     const unsubscribe = powerControlPluginListener();
 
     initialFetch(dispatch);
@@ -69,6 +75,10 @@ async function initialFetch(dispatch: AppDispatch) {
     fanIsAdapted = res.result;
   }
   dispatch(fanSlice.actions.setFanIsAdapted(fanIsAdapted));
+
+  setTimeout(() => {
+    dispatch(fanSlice.actions.setInitialLoad(false));
+  }, 0);
 }
 
 export default Content;

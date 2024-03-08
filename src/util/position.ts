@@ -1,10 +1,5 @@
-import { JsonObject, JsonProperty } from "typescript-json-serializer";
-
-@JsonObject()
 export class fanPosition {
-  @JsonProperty()
   temperature?: number;
-  @JsonProperty()
   fanRPMpercent?: number;
   static tempMax: number = 100;
   static fanMax: number = 100;

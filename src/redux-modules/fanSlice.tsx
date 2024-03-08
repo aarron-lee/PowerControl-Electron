@@ -16,6 +16,7 @@ export type FanProfile = {
 };
 
 type FanState = {
+  initialLoading: boolean;
   enabled: boolean;
   fanIsAuto: boolean;
   currentTemp?: number;
@@ -27,6 +28,7 @@ type FanState = {
 };
 
 const initialState: FanState = {
+  initialLoading: true,
   enabled: true,
   fanIsAuto: false,
   currentRpm: 0,
@@ -40,7 +42,10 @@ export const fanSlice = createSlice({
   name: "fan",
   initialState,
   reducers: {
-    initialLoad: (state) => {
+    setInitialLoad(state, action: PayloadAction<boolean>) {
+      state.initialLoading = action.payload;
+    },
+    loadLocalStorage: (state) => {
       const settingsStr = window.localStorage.getItem(SETTINGS_KEY);
       if (settingsStr) {
         const settings = JSON.parse(settingsStr);
@@ -92,6 +97,10 @@ export const fanSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
+export const selectInitialLoad = (store: RootState) => {
+  return store.fan.initialLoading;
+};
+
 export const selectFanEnabled = (store: RootState) => {
   return store.fan.enabled;
 };
@@ -110,6 +119,14 @@ export const selectFanIsAdapted = (store: RootState) => {
 
 export const selectFanMaxRpm = (store: RootState) => {
   return store.fan.fanMaxRpm;
+};
+
+export const selectActiveProfileName = (store: RootState) => {
+  return store.fan.activeFanProfile;
+};
+
+export const selectAllProfiles = (store: RootState) => {
+  return store.fan.fanSettings;
 };
 
 export const selectCurrentTemp = (store: RootState) => {

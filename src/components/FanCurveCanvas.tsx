@@ -1,6 +1,7 @@
 import { FC, useRef, useState, useEffect } from "react";
 import { FanCanvas } from "./fanCanvas";
-import { FANMODE, getTextPosByCanvasPos, fanPosition } from "../util";
+import { FANMODE } from "../util";
+import { getTextPosByCanvasPos, fanPosition } from "../util/position";
 
 const totalLines = 9;
 const lineColor = "#1E90FF";
@@ -84,10 +85,8 @@ const FanCurveCanvas: FC<Props> = ({
     const ctx = canvas?.getContext("2d");
     const width: number = ctx.canvas.width;
     const height: number = ctx.canvas.height;
-    const anchorPoint = new fanPosition(
-      fanPosition.tempMax / 2,
-      fixSpeed
-    ).getCanvasPos(width, height);
+    const fp = new fanPosition(fanPosition.tempMax / 2, fixSpeed);
+    const anchorPoint = fp.getCanvasPos(width, height);
     var lineStart = [0, anchorPoint[1]];
     var lineEnd = [width, anchorPoint[1]];
     var textPos = getTextPosByCanvasPos(
@@ -120,6 +119,12 @@ const FanCurveCanvas: FC<Props> = ({
     ctx.strokeStyle = lineColor;
     for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
       var curvePoint = curvePoints[pointIndex];
+      if (!(curvePoint instanceof fanPosition)) {
+        curvePoint = new fanPosition(
+          curvePoint.temperature,
+          curvePoint.fanRPMpercent
+        );
+      }
       var pointCanvasPos = curvePoint.getCanvasPos(width, height);
       ctx.lineTo(pointCanvasPos[0], pointCanvasPos[1]);
       ctx.moveTo(pointCanvasPos[0], pointCanvasPos[1]);
@@ -129,6 +134,12 @@ const FanCurveCanvas: FC<Props> = ({
     //绘制点和坐标
     for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
       var curvePoint = curvePoints[pointIndex];
+      if (!(curvePoint instanceof fanPosition)) {
+        curvePoint = new fanPosition(
+          curvePoint.temperature,
+          curvePoint.fanRPMpercent
+        );
+      }
       var pointCanvasPos = curvePoint.getCanvasPos(width, height);
       var textPox = getTextPosByCanvasPos(
         pointCanvasPos[0],
@@ -156,7 +167,7 @@ const FanCurveCanvas: FC<Props> = ({
 
   useEffect(() => {
     refreshCanvas();
-  }, [snapToGrid, fanMode, fixSpeed]);
+  }, [snapToGrid, fanMode, fixSpeed, curvePoints]);
   useEffect(() => {
     if (selectedPoint.current) {
       selectedPoint.current.temperature = selPointTemp;
