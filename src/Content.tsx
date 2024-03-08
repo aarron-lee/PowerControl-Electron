@@ -22,18 +22,10 @@ import { SettingsComponent, FANComponent } from "./components";
 import { AppDispatch } from "./redux-modules/store";
 import { fanSlice } from "./redux-modules/fanSlice";
 import { powerControlPluginListener } from "./pluginListeners";
+import serverAPI from "./util/serverApi";
 
 const Content: FC<{}> = ({}) => {
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(fanSlice.actions.initialLoad());
-    const unsubscribe = powerControlPluginListener();
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  useAppInitialize();
 
   return (
     <div>
@@ -47,5 +39,36 @@ const Content: FC<{}> = ({}) => {
     </div>
   );
 };
+
+function useAppInitialize() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fanSlice.actions.initialLoad());
+    const unsubscribe = powerControlPluginListener();
+
+    initialFetch(dispatch);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+}
+
+async function initialFetch(dispatch: AppDispatch) {
+  const r = await serverAPI.callPluginMethod("get_fanMAXRPM");
+  let fanMaxRpm = 1;
+  if (r && r.success) {
+    fanMaxRpm = r.result;
+  }
+  dispatch(fanSlice.actions.setMaxRpm(fanMaxRpm));
+
+  const res = await serverAPI.callPluginMethod("get_fanIsAdapted");
+  let fanIsAdapted = false;
+  if (res && res.success) {
+    fanIsAdapted = r.result;
+  }
+  dispatch(fanSlice.actions.setFanIsAdapted(fanIsAdapted));
+}
 
 export default Content;
