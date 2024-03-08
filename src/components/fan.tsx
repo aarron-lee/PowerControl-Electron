@@ -1,14 +1,6 @@
 import { useEffect, useState, FC } from "react";
-import {
-  Settings,
-  PluginManager,
-  ComponentName,
-  UpdateType,
-  FANPROFILEACTION,
-} from "../util";
+import { Settings, PluginManager, ComponentName, UpdateType } from "../util";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-
-import { localizeStrEnum, localizationManager } from "../i18n";
 import {
   Flex,
   FormLabel,
@@ -32,6 +24,7 @@ import {
 import FanCurveCanvas from "./FanCurveCanvas";
 import { cloneDeep } from "lodash";
 import { useAppDispatch } from "../redux-modules/store";
+import FanTemp from "./FanTemp";
 
 const FanProfileDropdown: FC = () => {
   const activeProfileName = useSelector(selectActiveProfileName);
@@ -139,6 +132,7 @@ export function FANComponent() {
           <FanProfileDropdown />
           <FANDisplayComponent />
           <FanRpm />
+          <FanTemp />
           <FanCurveModal />
         </>
       )}

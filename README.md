@@ -1,13 +1,7 @@
-# PowerControl Fork
+# PowerControl Electron Fork
 
-Powercontrol fork of v2.0.8 with fan controls only
-
-# Quick Install
-
-```
-curl -L https://github.com/aarron-lee/PowerControl/raw/main/install.sh | sh
-```
+Based on Powercontrol fork, intended to only be used with the fork
 
 # Disclaimer
 
-forked for my own personal use, I will not provide any support for this fork
+forked for my own personal use, I will not provide any support for this
