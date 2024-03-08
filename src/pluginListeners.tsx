@@ -5,10 +5,10 @@ import { serverAPI } from "./util/serverApi";
 let powerControlListenerId: number | undefined;
 
 export const powerControlPluginListener = () => {
+  fetchData();
+
   powerControlListenerId = window.setInterval(async () => {
-    await getFanRPM();
-    await getFanTemp();
-    await getFanIsAuto();
+    fetchData();
   }, 3000);
 
   return () => {
@@ -17,6 +17,12 @@ export const powerControlPluginListener = () => {
     }
   };
 };
+
+async function fetchData() {
+  await getFanRPM();
+  await getFanTemp();
+  await getFanIsAuto();
+}
 
 async function getFanRPM() {
   const response = await serverAPI.callPluginMethod("get_fanRPM", {});
