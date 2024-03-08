@@ -6,13 +6,8 @@ let powerControlListenerId: number | undefined;
 
 export const powerControlPluginListener = () => {
   powerControlListenerId = window.setInterval(async () => {
-    const response = await serverAPI.callPluginMethod("get_fanRPM", {});
-
-    const { success, result } = response;
-
-    if (success && typeof result === "number") {
-      store.dispatch(fanSlice.actions.setCurrentRpm(result));
-    }
+    await getFanRPM();
+    await getFanTemp();
   }, 1000);
 
   return () => {
@@ -21,3 +16,27 @@ export const powerControlPluginListener = () => {
     }
   };
 };
+
+async function getFanRPM() {
+  const response = await serverAPI.callPluginMethod("get_fanRPM", {});
+
+  const { success, result } = response;
+
+  if (success && typeof result === "number") {
+    store.dispatch(fanSlice.actions.setCurrentRpm(result));
+  }
+}
+
+async function getFanTemp() {
+  const response = await serverAPI.callPluginMethod("get_fanTemp", {});
+
+  const { success, result } = response;
+
+  let fanTemp = -1;
+
+  if (success && typeof result === "number") {
+    fanTemp = result / 1000;
+  }
+
+  store.dispatch(fanSlice.actions.setCurrentFanTemp(fanTemp));
+}

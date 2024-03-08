@@ -16,6 +16,8 @@ import Dropdown from "./ui/Dropdown";
 
 import FanRpm from "./FanRpm";
 import FanCurveModal from "./FanCurveModal";
+import { useSelector } from "react-redux";
+import { FanCurvePoint, selectActiveProfile } from "../redux-modules/fanSlice";
 
 var fanDisplayIntervalID: any;
 const totalLines = 9;
@@ -86,10 +88,16 @@ const FANSelectProfileComponent: FC = () => {
 
 const FANDisplayComponent: FC = () => {
   const canvasRef: any = useRef(null);
-  const curvePoints: any = useRef([]);
+
+  const { profileName, fanProfile } = useSelector(selectActiveProfile);
+
+  let curvePoints = [] as FanCurvePoint[];
+  if (fanProfile) {
+    //@ts-ignore
+    curvePoints = fanProfile?.curvePoints || [];
+  }
   const initDraw = (ref: any) => {
     canvasRef.current = ref;
-    curvePoints.current = Settings.appFanSetting()?.curvePoints;
   };
   const refresh = () => {
     refreshCanvas();
@@ -154,7 +162,7 @@ const FANDisplayComponent: FC = () => {
       ctx.fillText(fanText, 2, height-lineDistance * i * height + 10);
     }
     ctx.stroke();*/
-    switch (Settings.appFanSetting()?.fanMode) {
+    switch (fanProfile?.fanMode) {
       case FANMODE.NOCONTROL: {
         drawNoControlMode();
         break;
@@ -264,13 +272,11 @@ const FANDisplayComponent: FC = () => {
     const ctx = canvas?.getContext("2d");
     const width: number = ctx.canvas.width;
     const height: number = ctx.canvas.height;
-    curvePoints.current = curvePoints.current.sort(
-      (a: fanPosition, b: fanPosition) => {
-        return a.temperature == b.temperature
-          ? a.fanRPMpercent!! - b.fanRPMpercent!!
-          : a.temperature!! - b.temperature!!;
-      }
-    );
+    curvePoints = curvePoints.sort((a, b) => {
+      return a.temperature == b.temperature
+        ? a.fanRPMpercent!! - b.fanRPMpercent!!
+        : a.temperature!! - b.temperature!!;
+    });
     //说明绘制
     ctx.beginPath();
     ctx.fillStyle = setPointColor;
@@ -286,12 +292,8 @@ const FANDisplayComponent: FC = () => {
     ctx.beginPath();
     ctx.moveTo(0, height);
     ctx.strokeStyle = lineColor;
-    for (
-      let pointIndex = 0;
-      pointIndex < curvePoints.current.length;
-      pointIndex++
-    ) {
-      var curvePoint = curvePoints.current[pointIndex];
+    for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
+      var curvePoint = curvePoints[pointIndex];
       var pointCanvasPos = (curvePoint as fanPosition).getCanvasPos(
         width,
         height

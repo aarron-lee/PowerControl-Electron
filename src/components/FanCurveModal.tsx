@@ -2,13 +2,7 @@ import { FC, useRef, useState, useEffect } from "react";
 import Dropdown from "./ui/Dropdown";
 import { FanCanvas } from "./fanCanvas";
 import { localizeStrEnum, localizationManager } from "../i18n";
-import {
-  Settings,
-  FANMODE,
-  getTextPosByCanvasPos,
-  fanPosition,
-  FanSetting,
-} from "../util";
+import { FANMODE, getTextPosByCanvasPos, fanPosition } from "../util";
 import {
   Button,
   FormLabel,
@@ -50,18 +44,14 @@ const FanCurveModal: FC = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <FANCretateProfileModelComponent closeModal={onClose} />
+          <CreateFanModal closeModal={onClose} />
         </ModalContent>
       </Modal>
     </>
   );
 };
 
-function FANCretateProfileModelComponent({
-  closeModal,
-}: {
-  closeModal: () => void;
-}) {
+function CreateFanModal({ closeModal }: { closeModal: () => void }) {
   const dispatch = useAppDispatch();
   const canvasRef: any = useRef(null);
   const curvePoints: any = useRef([]);
@@ -212,7 +202,7 @@ function FANCretateProfileModelComponent({
       snapToGrid,
       fanMode,
       fixSpeed,
-      curvePoints,
+      curvePoints: curvePoints.current,
     } as FanProfile;
     dispatch(
       fanSlice.actions.createOrUpdateFanProfile({

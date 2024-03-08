@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import { SETTINGS_KEY } from "./constants";
+import { get } from "lodash";
 
 export type FanCurvePoint = {
   temperature: number;
@@ -16,13 +17,16 @@ export type FanProfile = {
 
 type FanState = {
   enabled: boolean;
+  currentTemp?: number;
   currentRpm: number;
+  activeFanProfile?: string;
   fanSettings: { [name: string]: FanProfile };
 };
 
 const initialState: FanState = {
   enabled: true,
   currentRpm: 0,
+  currentTemp: -1,
   fanSettings: {},
 };
 
@@ -38,6 +42,9 @@ export const fanSlice = createSlice({
         if (settings.fanSettings) {
           state.fanSettings = settings.fanSettings;
         }
+        if (settings.activeFanProfile) {
+          state.activeFanProfile = settings.activeFanProfile;
+        }
       }
     },
     saveSettings: (state) => {
@@ -49,12 +56,22 @@ export const fanSlice = createSlice({
     setCurrentRpm: (state, action: PayloadAction<number>) => {
       state.currentRpm = action.payload;
     },
+    setCurrentFanTemp(state, action: PayloadAction<number>) {
+      state.currentTemp = action.payload;
+    },
     createOrUpdateFanProfile: (
       state,
       action: PayloadAction<{ name: string; profile: FanProfile }>
     ) => {
       const { name, profile } = action.payload;
       state.fanSettings[name] = profile;
+      state.activeFanProfile = name;
+    },
+    setActiveFanProfile(state, action: PayloadAction<string>) {
+      const profileName = action.payload;
+      if (state.fanSettings[profileName]) {
+        state.activeFanProfile = profileName;
+      }
     },
   },
   extraReducers: (builder) => {},
@@ -66,4 +83,30 @@ export const selectFanEnabled = (store: RootState) => {
 
 export const selectCurrentRpm = (store: RootState) => {
   return store.fan.currentRpm;
+};
+
+export const selectCurrentTemp = (store: RootState) => {
+  return store.fan.currentTemp;
+};
+
+export const selectFanProfile = (profileName: string) => (store: RootState) => {
+  return get(store, `fan.fanSettings[${profileName}]`, {});
+};
+
+export const selectCurvePoints =
+  (profileName: string) => (store: RootState) => {
+    const fanProfile = selectFanProfile(profileName)(store) as FanProfile;
+
+    return fanProfile?.curvePoints || [];
+  };
+
+export const selectActiveProfile = (store: RootState) => {
+  const profileName = store.fan.activeFanProfile;
+
+  if (profileName) {
+    const fanProfile = selectFanProfile(profileName)(store) as FanProfile;
+
+    return { profileName, fanProfile };
+  }
+  return {};
 };
