@@ -66,7 +66,7 @@ async function initialFetch(dispatch: AppDispatch) {
   const res = await serverAPI.callPluginMethod("get_fanIsAdapted");
   let fanIsAdapted = false;
   if (res && res.success) {
-    fanIsAdapted = r.result;
+    fanIsAdapted = res.result;
   }
   dispatch(fanSlice.actions.setFanIsAdapted(fanIsAdapted));
 }

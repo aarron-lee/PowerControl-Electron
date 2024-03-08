@@ -17,6 +17,7 @@ export type FanProfile = {
 
 type FanState = {
   enabled: boolean;
+  fanIsAuto: boolean;
   currentTemp?: number;
   fanMaxRpm: number;
   fanIsAdapted: boolean;
@@ -27,6 +28,7 @@ type FanState = {
 
 const initialState: FanState = {
   enabled: true,
+  fanIsAuto: false,
   currentRpm: 0,
   currentTemp: -1,
   fanMaxRpm: 1,
@@ -83,6 +85,9 @@ export const fanSlice = createSlice({
         state.activeFanProfile = profileName;
       }
     },
+    setFanIsAuto(state, action: PayloadAction<boolean>) {
+      state.fanIsAuto = action.payload;
+    },
   },
   extraReducers: (builder) => {},
 });
@@ -93,6 +98,18 @@ export const selectFanEnabled = (store: RootState) => {
 
 export const selectCurrentRpm = (store: RootState) => {
   return store.fan.currentRpm;
+};
+
+export const selectFanIsAuto = (store: RootState) => {
+  return store.fan.fanIsAuto;
+};
+
+export const selectFanIsAdapted = (store: RootState) => {
+  return store.fan.fanIsAdapted;
+};
+
+export const selectFanMaxRpm = (store: RootState) => {
+  return store.fan.fanMaxRpm;
 };
 
 export const selectCurrentTemp = (store: RootState) => {

@@ -8,7 +8,8 @@ export const powerControlPluginListener = () => {
   powerControlListenerId = window.setInterval(async () => {
     await getFanRPM();
     await getFanTemp();
-  }, 1000);
+    await getFanIsAuto();
+  }, 3000);
 
   return () => {
     if (powerControlListenerId) {
@@ -39,4 +40,18 @@ async function getFanTemp() {
   }
 
   store.dispatch(fanSlice.actions.setCurrentFanTemp(fanTemp));
+}
+
+async function getFanIsAuto() {
+  const response = await serverAPI.callPluginMethod("get_fanIsAuto", {});
+
+  const { success, result } = response;
+
+  let fanIsAuto = false;
+
+  if (success) {
+    fanIsAuto = Boolean(result);
+  }
+
+  store.dispatch(fanSlice.actions.setFanIsAuto(fanIsAuto));
 }

@@ -2,31 +2,43 @@ import { APPLYTYPE, FANMODE } from "./enum";
 import { FanControl } from "./pluginMain";
 import { Settings } from "./settings";
 import serverAPI from "./serverApi";
+import { store } from "../redux-modules/store";
+import {
+  fanSlice,
+  selectCurrentRpm,
+  selectCurrentTemp,
+  selectFanIsAdapted,
+  selectFanIsAuto,
+  selectFanMaxRpm,
+} from "../redux-modules/fanSlice";
 
 export class BackendData {
   private fanMaxRPM = 0;
   private has_fanMaxRPM = false;
   private fanIsAdapted = false;
   public async init() {
-    await serverAPI!.callPluginMethod("get_fanMAXRPM", {}).then((res) => {
-      if (res.success) {
-        this.fanMaxRPM = res.result;
-        this.has_fanMaxRPM = true;
-      } else {
-        this.fanMaxRPM = 1;
-      }
-    });
-    await serverAPI!.callPluginMethod("get_fanIsAdapted", {}).then((res) => {
-      if (res.success) {
-        this.fanIsAdapted = res.result;
-      } else {
-        this.fanIsAdapted = false;
-      }
-    });
+    const r = await serverAPI.callPluginMethod("get_fanMAXRPM");
+    let fanMaxRpm = 1;
+    if (r && r.success) {
+      fanMaxRpm = r.result;
+      this.fanMaxRPM = fanMaxRpm;
+      this.has_fanMaxRPM = true;
+    }
+    store.dispatch(fanSlice.actions.setMaxRpm(fanMaxRpm));
+
+    const res = await serverAPI.callPluginMethod("get_fanIsAdapted");
+    let fanIsAdapted = false;
+    if (res && res.success) {
+      fanIsAdapted = res.result;
+      this.fanIsAdapted = fanIsAdapted;
+    }
+    store.dispatch(fanSlice.actions.setFanIsAdapted(fanIsAdapted));
   }
 
   public getFanMAXPRM() {
-    return this.fanMaxRPM;
+    const fanMaxRPM = selectFanMaxRpm(store.getState());
+
+    return fanMaxRPM;
   }
 
   public HasFanMAXPRM() {
@@ -34,43 +46,24 @@ export class BackendData {
   }
 
   public getFanIsAdapt() {
-    return this.fanIsAdapted;
+    const fanIsAdapted = selectFanIsAdapted(store.getState());
+    return fanIsAdapted;
   }
 
   public async getFanRPM() {
-    var fanPRM: number;
-    await serverAPI!.callPluginMethod("get_fanRPM", {}).then((res) => {
-      if (res.success) {
-        fanPRM = res.result;
-      } else {
-        fanPRM = 0;
-      }
-    });
-    return fanPRM!!;
+    const fanRpm = selectCurrentRpm(store.getState());
+
+    return fanRpm;
   }
 
   public async getFanTemp() {
-    var fanTemp: number;
-    await serverAPI!.callPluginMethod("get_fanTemp", {}).then((res) => {
-      if (res.success) {
-        fanTemp = res.result / 1000;
-      } else {
-        fanTemp = -1;
-      }
-    });
-    return fanTemp!!;
+    const currentTemp = selectCurrentTemp(store.getState());
+    return currentTemp;
   }
 
   public async getFanIsAuto() {
-    var fanIsAuto: boolean;
-    await serverAPI!.callPluginMethod("get_fanIsAuto", {}).then((res) => {
-      if (res.success) {
-        fanIsAuto = res.result;
-      } else {
-        fanIsAuto = false;
-      }
-    });
-    return fanIsAuto!!;
+    const fanIsAuto = selectFanIsAuto(store.getState());
+    return fanIsAuto;
   }
 }
 
