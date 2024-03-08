@@ -100,6 +100,7 @@ const FANDisplayComponent: FC = () => {
       snapToGrid={snapToGrid}
       curvePoints={cloneDeep(curvePoints)}
       setFixSpeed={() => {}}
+      disableDrag
     />
   );
 };

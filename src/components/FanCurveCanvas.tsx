@@ -15,6 +15,7 @@ type Props = {
   fixSpeed: number;
   snapToGrid: boolean;
   curvePoints: any[];
+  disableDrag?: boolean;
   setFixSpeed: (speed: number) => any;
 };
 
@@ -24,6 +25,7 @@ const FanCurveCanvas: FC<Props> = ({
   snapToGrid,
   curvePoints,
   setFixSpeed,
+  disableDrag = false,
 }) => {
   const canvasRef: any = useRef(null);
   //drag
@@ -351,15 +353,22 @@ const FanCurveCanvas: FC<Props> = ({
           //onPointerMove={(e:fanPosition) => {onPointerMove(e)}}
           //onPointerUp={(e:fanPosition) => {onPointerUp(e)}}
           onPointerShortPress={(e: fanPosition) => {
+            if (disableDrag) return;
             onPointerShortPress(e);
           }}
           onPointerLongPress={(e: fanPosition) => {
+            if (disableDrag) return;
+
             onPointerLongPress(e);
           }}
           onPointerDragDown={(e: fanPosition) => {
+            if (disableDrag) return false;
+
             return onPointerDragDown(e)!!;
           }}
           onPointerDraging={(e: fanPosition) => {
+            if (disableDrag) return;
+
             onPointerDraging(e);
           }}
           initDraw={(f: any) => {
