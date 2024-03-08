@@ -1,7 +1,10 @@
 import { SETTINGS_KEY } from "./constants";
 import { fanSlice } from "./fanSlice";
 
-const MUTATING_ACTION_TYPES = [fanSlice.actions.setEnabled.type];
+const MUTATING_ACTION_TYPES = [
+  fanSlice.actions.setEnabled.type,
+  fanSlice.actions.createOrUpdateFanProfile.type,
+];
 
 const saveToLocalStorage = (state: any) => {
   const { fan } = state;

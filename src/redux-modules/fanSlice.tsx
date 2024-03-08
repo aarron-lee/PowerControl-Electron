@@ -2,10 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import { SETTINGS_KEY } from "./constants";
 
+export type FanCurvePoint = {
+  temperature: number;
+  fanRPMpercent: number;
+};
+
+export type FanProfile = {
+  snapToGrid: boolean;
+  fanMode: number;
+  fixSpeed: number;
+  curvePoints: FanCurvePoint[];
+};
+
 type FanState = {
   enabled: boolean;
   currentRpm: number;
-  fanSettings: { [name: string]: any };
+  fanSettings: { [name: string]: FanProfile };
 };
 
 const initialState: FanState = {
@@ -36,6 +48,13 @@ export const fanSlice = createSlice({
     },
     setCurrentRpm: (state, action: PayloadAction<number>) => {
       state.currentRpm = action.payload;
+    },
+    createOrUpdateFanProfile: (
+      state,
+      action: PayloadAction<{ name: string; profile: FanProfile }>
+    ) => {
+      const { name, profile } = action.payload;
+      state.fanSettings[name] = profile;
     },
   },
   extraReducers: (builder) => {},

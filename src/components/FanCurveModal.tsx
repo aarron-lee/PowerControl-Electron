@@ -26,10 +26,11 @@ import {
   useDisclosure,
   ModalFooter,
 } from "@chakra-ui/react";
+import { useAppDispatch } from "../redux-modules/store";
+import { FanProfile, fanSlice } from "../redux-modules/fanSlice";
 
 const totalLines = 9;
 const lineColor = "#1E90FF";
-const setPointColor = "#00BFFF";
 const pointBlockDis = 5;
 const pointColor = "#1A9FFF";
 const selectColor = "#FF0000";
@@ -61,6 +62,7 @@ function FANCretateProfileModelComponent({
 }: {
   closeModal: () => void;
 }) {
+  const dispatch = useAppDispatch();
   const canvasRef: any = useRef(null);
   const curvePoints: any = useRef([]);
   //drag
@@ -206,9 +208,17 @@ function FANCretateProfileModelComponent({
     }
   };
   const onCreateProfile = () => {
-    return Settings.addFanSetting(
-      profileName!!,
-      new FanSetting(snapToGrid, fanMode, fixSpeed, curvePoints.current)
+    const newProfile = {
+      snapToGrid,
+      fanMode,
+      fixSpeed,
+      curvePoints,
+    } as FanProfile;
+    dispatch(
+      fanSlice.actions.createOrUpdateFanProfile({
+        name: `${profileName}`,
+        profile: newProfile,
+      })
     );
   };
   useEffect(() => {
@@ -393,7 +403,6 @@ function FANCretateProfileModelComponent({
           value={profileName}
           onChange={(e) => {
             setProfileName(e.target.value);
-            console.log(e.target.value);
           }}
         />
 
@@ -535,9 +544,8 @@ function FANCretateProfileModelComponent({
       <ModalFooter>
         <Button
           onClick={() => {
-            if (onCreateProfile()) {
-              closeModal();
-            }
+            onCreateProfile();
+            closeModal();
           }}
         >
           {localizationManager.getString(localizeStrEnum.CREATE)}
