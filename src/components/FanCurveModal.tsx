@@ -56,6 +56,10 @@ function CreateFanModal({ closeModal }: { closeModal: () => void }) {
   const [selPointTemp, setSelPointTemp] = useState(0);
   const [selPointSpeed, setSelPointSpeed] = useState(0);
 
+  const onChange = (newCurvePoints: any[]) => {
+    curvePoints.current = newCurvePoints;
+  };
+
   const onCreateProfile = () => {
     const newProfile = {
       snapToGrid,
@@ -189,10 +193,18 @@ function CreateFanModal({ closeModal }: { closeModal: () => void }) {
           fixSpeed={fixSpeed}
           snapToGrid={snapToGrid}
           curvePoints={curvePoints.current}
+          onChange={onChange}
           setFixSpeed={setFixSpeed}
         />
       </ModalBody>
       <ModalFooter>
+        <Button
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          {localizationManager.getString(localizeStrEnum.CANCEL)}
+        </Button>
         <Button
           onClick={() => {
             onCreateProfile();
@@ -200,13 +212,6 @@ function CreateFanModal({ closeModal }: { closeModal: () => void }) {
           }}
         >
           {localizationManager.getString(localizeStrEnum.CREATE)}
-        </Button>
-        <Button
-          onClick={() => {
-            closeModal();
-          }}
-        >
-          {localizationManager.getString(localizeStrEnum.CANCEL)}
         </Button>
       </ModalFooter>
     </>

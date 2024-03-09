@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import { SETTINGS_KEY } from "./constants";
 import { get } from "lodash";
+import { fanPosition } from "../util";
 
 export type FanCurvePoint = {
   temperature: number;
@@ -66,6 +67,24 @@ export const fanSlice = createSlice({
     },
     setCurrentRpm: (state, action: PayloadAction<number>) => {
       state.currentRpm = action.payload;
+    },
+    setCurvePoints(
+      state,
+      action: PayloadAction<{
+        profileName: string;
+        newCurvePoints: FanCurvePoint[];
+      }>
+    ) {
+      const { profileName, newCurvePoints } = action.payload;
+
+      let fanPositions = newCurvePoints.map((point) => {
+        if (!(point instanceof fanPosition)) {
+          return new fanPosition(point.temperature, point.fanRPMpercent);
+        }
+        return point;
+      }) as FanCurvePoint[];
+
+      state.fanSettings[profileName].curvePoints = fanPositions;
     },
     setMaxRpm: (state, action: PayloadAction<number>) => {
       state.fanMaxRpm = action.payload;

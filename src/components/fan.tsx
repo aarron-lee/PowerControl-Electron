@@ -1,5 +1,4 @@
-import { useEffect, useState, FC } from "react";
-import { Settings, PluginManager, ComponentName, UpdateType } from "../util";
+import { FC } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -11,7 +10,6 @@ import {
   MenuOptionGroup,
   MenuItemOption,
 } from "@chakra-ui/react";
-
 import FanRpm from "./FanRpm";
 import FanCurveModal from "./FanCurveModal";
 import { useSelector } from "react-redux";
@@ -20,9 +18,9 @@ import {
   selectActiveProfile,
   selectActiveProfileName,
   selectAllProfiles,
+  selectFanEnabled,
 } from "../redux-modules/fanSlice";
 import FanCurveCanvas from "./FanCurveCanvas";
-import { cloneDeep } from "lodash";
 import { useAppDispatch } from "../redux-modules/store";
 import FanTemp from "./FanTemp";
 
@@ -77,23 +75,35 @@ const FanProfileDropdown: FC = () => {
   );
 };
 
-const FANDisplayComponent: FC = () => {
+export const FANDisplayComponent: FC = () => {
   const { profileName, fanProfile } = useSelector(selectActiveProfile);
+  const dispatch = useAppDispatch();
+
+  const onChange = (newCurvePoints: any[]) => {
+    if (profileName && fanProfile)
+      return dispatch(
+        fanSlice.actions.setCurvePoints({
+          profileName,
+          newCurvePoints,
+        })
+      );
+  };
 
   if (!profileName || !fanProfile) {
     return null;
   }
 
-  const { fanMode, fixSpeed, snapToGrid, curvePoints } = fanProfile;
+  const { fanMode, fixSpeed, snapToGrid } = fanProfile;
 
   return (
     <FanCurveCanvas
       fanMode={fanMode}
       fixSpeed={fixSpeed}
       snapToGrid={snapToGrid}
-      curvePoints={cloneDeep(curvePoints)}
+      curvePoints={fanProfile.curvePoints}
+      onChange={onChange}
       setFixSpeed={() => {}}
-      disableDrag
+      // disableDrag
     />
   );
 };
@@ -101,33 +111,11 @@ const FANDisplayComponent: FC = () => {
 //FANRPM模块
 
 export function FANComponent() {
-  const [show, setShow] = useState<boolean>(Settings.ensureEnable());
-  const hide = (ishide: boolean) => {
-    setShow(!ishide);
-  };
-  // listen Settings
-  useEffect(() => {
-    PluginManager.listenUpdateComponent(
-      ComponentName.FAN_ALL,
-      [ComponentName.FAN_ALL],
-      (_ComponentName, updateType) => {
-        switch (updateType) {
-          case UpdateType.HIDE: {
-            hide(true);
-            break;
-          }
-          case UpdateType.SHOW: {
-            hide(false);
-            break;
-          }
-        }
-      }
-    );
-  }, []);
-  //<FANSelectProfileComponent/>
+  const enabled = useSelector(selectFanEnabled);
+
   return (
     <div>
-      {show && (
+      {enabled && (
         <>
           <FanProfileDropdown />
           <FANDisplayComponent />

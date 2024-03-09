@@ -9,7 +9,7 @@ export const store = configureStore({
     fan: fanSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
+    getDefaultMiddleware({ serializableCheck: false }).concat([
       saveFanSettingsMiddleware,
       // logger
     ]),

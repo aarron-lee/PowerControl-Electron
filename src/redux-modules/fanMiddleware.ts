@@ -7,6 +7,7 @@ const MUTATING_ACTION_TYPES = [
   fanSlice.actions.setActiveFanProfile.type,
   fanSlice.actions.setFanIsAdapted.type,
   fanSlice.actions.setMaxRpm.type,
+  fanSlice.actions.setCurvePoints.type,
 ];
 
 const saveToLocalStorage = (state: any) => {

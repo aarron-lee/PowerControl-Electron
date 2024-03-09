@@ -1,5 +1,7 @@
 const plugin_name = "PowerControl";
 
+// https://github.com/SteamDeckHomebrew/decky-loader/blob/8e8e6a2bd1b143633b227022dbe8f2104db2560d/backend/src/legacy/library.js#L11
+
 async function callPluginMethod(method_name: string, arg_object = {}) {
   if (plugin_name == undefined)
     throw new Error(

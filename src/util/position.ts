@@ -51,28 +51,6 @@ export class fanPosition {
   }
 }
 
-/*
-export class canvasPosition {
-  @JsonProperty()
-  canx?:number;
-  @JsonProperty()
-  cany?:number;
-  constructor(canx:number,cany:number){
-    this.canx=canx;
-    this.cany=cany;
-  }
-  public getFanPos(canWidth:number,canHeight:number)
-  {
-    const tempMax=100; 
-    const fanMax=100;
-    const fanMin=0;
-    const tempMin=0;
-    var temperature=Math.min(Math.max(this.canx!!/canWidth*tempMax,tempMin),tempMax);
-    var fanRPMpercent=Math.min(Math.max((1-this.cany!!/canHeight)*fanMax,fanMin),fanMax);
-    return new fanPosition(temperature,fanRPMpercent)
-  }
-}
-*/
 //通过画布位置来调整文字位置
 export const getTextPosByCanvasPos = (
   canPosx: number,

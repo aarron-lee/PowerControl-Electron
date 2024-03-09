@@ -2,6 +2,7 @@ import { FC, useRef, useState, useEffect } from "react";
 import { FanCanvas } from "./fanCanvas";
 import { FANMODE } from "../util";
 import { getTextPosByCanvasPos, fanPosition } from "../util/position";
+import { isEqual } from "lodash";
 
 const totalLines = 9;
 const lineColor = "#1E90FF";
@@ -15,6 +16,7 @@ type Props = {
   fixSpeed: number;
   snapToGrid: boolean;
   curvePoints: any[];
+  onChange: (newCurvePoints: any[]) => void;
   disableDrag?: boolean;
   setFixSpeed: (speed: number) => any;
 };
@@ -24,13 +26,18 @@ type CurvePoint = {
   fanRPMpercent: number;
 };
 
-export const useFanCurveState = (iinitialCurvePoints: CurvePoint[]) => {
-  let fanPositions = iinitialCurvePoints.map((point) => {
+function generateFanPositions(curvePoints: any[]) {
+  let fanPositions = curvePoints.map((point) => {
     if (!(point instanceof fanPosition)) {
       return new fanPosition(point.temperature, point.fanRPMpercent);
     }
     return point;
   });
+  return fanPositions;
+}
+
+export const useFanCurveState = (initialCurvePoints: CurvePoint[]) => {
+  let fanPositions = generateFanPositions(initialCurvePoints);
 
   const state = useState(fanPositions);
 
@@ -39,10 +46,11 @@ export const useFanCurveState = (iinitialCurvePoints: CurvePoint[]) => {
 };
 
 const FanCurveCanvas: FC<Props> = ({
+  curvePoints: initialCurvePoints,
   fanMode,
   fixSpeed,
   snapToGrid,
-  curvePoints: unmodifiedCurvePoints,
+  onChange,
   setFixSpeed,
   disableDrag = false,
 }) => {
@@ -52,9 +60,30 @@ const FanCurveCanvas: FC<Props> = ({
   //select
   const selectedPoint: any = useRef(null);
 
-  const [curvePoints, setCurvePoints] = useFanCurveState(unmodifiedCurvePoints);
+  const initialCurvePointRef = useRef(initialCurvePoints);
 
-  //@ts-ignore
+  const [curvePoints, setter] = useFanCurveState(initialCurvePoints);
+
+  const setCurvePoints = (newCurvePoints: any[]) => {
+    setter(newCurvePoints);
+    onChange && onChange(newCurvePoints);
+  };
+
+  useEffect(() => {
+    if (!isEqual(initialCurvePointRef.current, initialCurvePoints)) {
+      const updatedCurvePoints = generateFanPositions(initialCurvePoints);
+      initialCurvePointRef.current = updatedCurvePoints;
+      setter(updatedCurvePoints);
+    }
+  }, [initialCurvePoints]);
+
+  // let curvePoints = initialCurvePoints.map((point) => {
+  //   if (!(point instanceof fanPosition)) {
+  //     return new fanPosition(point.temperature, point.fanRPMpercent);
+  //   }
+  //   return point;
+  // });
+
   const [selPointTemp, setSelPointTemp] = useState(0);
   const [selPointSpeed, setSelPointSpeed] = useState(0);
   const initDraw = (ref: any) => {
@@ -152,7 +181,6 @@ const FanCurveCanvas: FC<Props> = ({
     }
     ctx.lineTo(width, 0);
     ctx.stroke();
-    //绘制点和坐标
     for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
       var curvePoint = curvePoints[pointIndex];
       var pointCanvasPos = curvePoint.getCanvasPos(width, height);
@@ -357,13 +385,8 @@ const FanCurveCanvas: FC<Props> = ({
             border: "1px solid #1a9fff",
             backgroundColor: "#1a1f2c",
             borderRadius: "4px",
-          }} //onClick={(e: any) => onClickCanvas(e)}
-          //onPointerDown={(e:any) => onPointerDown(e)}
-          //onPointerMove={(e:any) => onPointerMove(e)}
-          //onPointerUp={(e:any) => onPointerUp(e)}
-          //onPointerDown={(e:fanPosition) => {onPointerDown(e)}}
-          //onPointerMove={(e:fanPosition) => {onPointerMove(e)}}
-          //onPointerUp={(e:fanPosition) => {onPointerUp(e)}}
+          }}
+          //onClick={(e: any) => onClickCanvas(e)}
           onPointerShortPress={(e: fanPosition) => {
             if (disableDrag) return;
             onPointerShortPress(e);
