@@ -128,7 +128,7 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
     );
     canvas.onPointerDraging?.call(canvas, fanClickPos);
   }
-  const { ...option } = canvas;
+  const { width, height, style } = canvas;
   return (
     <canvas
       ref={canvasRef}
@@ -145,7 +145,9 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       onPointerLeave={(e: any) => {
         onPointerLeave(e);
       }}
-      {...option}
+      width={width}
+      height={height}
+      style={style}
     />
   );
 };

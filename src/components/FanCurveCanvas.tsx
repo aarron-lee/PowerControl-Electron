@@ -19,11 +19,30 @@ type Props = {
   setFixSpeed: (speed: number) => any;
 };
 
+type CurvePoint = {
+  temperature: number;
+  fanRPMpercent: number;
+};
+
+export const useFanCurveState = (iinitialCurvePoints: CurvePoint[]) => {
+  let fanPositions = iinitialCurvePoints.map((point) => {
+    if (!(point instanceof fanPosition)) {
+      return new fanPosition(point.temperature, point.fanRPMpercent);
+    }
+    return point;
+  });
+
+  const state = useState(fanPositions);
+
+  // const [curvePoints, setCurvePoints] = state
+  return state;
+};
+
 const FanCurveCanvas: FC<Props> = ({
   fanMode,
   fixSpeed,
   snapToGrid,
-  curvePoints,
+  curvePoints: unmodifiedCurvePoints,
   setFixSpeed,
   disableDrag = false,
 }) => {
@@ -32,6 +51,8 @@ const FanCurveCanvas: FC<Props> = ({
   const dragPoint: any = useRef(null);
   //select
   const selectedPoint: any = useRef(null);
+
+  const [curvePoints, setCurvePoints] = useFanCurveState(unmodifiedCurvePoints);
 
   //@ts-ignore
   const [selPointTemp, setSelPointTemp] = useState(0);
@@ -109,11 +130,15 @@ const FanCurveCanvas: FC<Props> = ({
     const ctx = canvas?.getContext("2d");
     const width: number = ctx.canvas.width;
     const height: number = ctx.canvas.height;
-    curvePoints = curvePoints.sort((a: fanPosition, b: fanPosition) => {
-      return a.temperature == b.temperature
-        ? a.fanRPMpercent!! - b.fanRPMpercent!!
-        : a.temperature!! - b.temperature!!;
-    });
+    const updatedCurvePoints = curvePoints.sort(
+      (a: fanPosition, b: fanPosition) => {
+        return a.temperature == b.temperature
+          ? a.fanRPMpercent!! - b.fanRPMpercent!!
+          : a.temperature!! - b.temperature!!;
+      }
+    );
+
+    setCurvePoints(updatedCurvePoints);
 
     //绘制线段
     ctx.beginPath();
@@ -121,12 +146,6 @@ const FanCurveCanvas: FC<Props> = ({
     ctx.strokeStyle = lineColor;
     for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
       var curvePoint = curvePoints[pointIndex];
-      if (!(curvePoint instanceof fanPosition)) {
-        curvePoint = new fanPosition(
-          curvePoint.temperature,
-          curvePoint.fanRPMpercent
-        );
-      }
       var pointCanvasPos = curvePoint.getCanvasPos(width, height);
       ctx.lineTo(pointCanvasPos[0], pointCanvasPos[1]);
       ctx.moveTo(pointCanvasPos[0], pointCanvasPos[1]);
@@ -136,12 +155,6 @@ const FanCurveCanvas: FC<Props> = ({
     //绘制点和坐标
     for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
       var curvePoint = curvePoints[pointIndex];
-      if (!(curvePoint instanceof fanPosition)) {
-        curvePoint = new fanPosition(
-          curvePoint.temperature,
-          curvePoint.fanRPMpercent
-        );
-      }
       var pointCanvasPos = curvePoint.getCanvasPos(width, height);
       var textPox = getTextPosByCanvasPos(
         pointCanvasPos[0],
@@ -342,9 +355,8 @@ const FanCurveCanvas: FC<Props> = ({
             height: "300px",
             padding: "0px",
             border: "1px solid #1a9fff",
-            // @ts-ignore
-            "background-color": "#1a1f2c",
-            "border-radius": "4px",
+            backgroundColor: "#1a1f2c",
+            borderRadius: "4px",
           }} //onClick={(e: any) => onClickCanvas(e)}
           //onPointerDown={(e:any) => onPointerDown(e)}
           //onPointerMove={(e:any) => onPointerMove(e)}
