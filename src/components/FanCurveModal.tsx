@@ -193,7 +193,7 @@ function CreateFanModal({ closeModal }: { closeModal: () => void }) {
           fixSpeed={fixSpeed}
           snapToGrid={snapToGrid}
           curvePoints={curvePoints.current}
-          onChange={onChange}
+          setCurvePoints={onChange}
           setFixSpeed={setFixSpeed}
         />
       </ModalBody>
