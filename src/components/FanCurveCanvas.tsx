@@ -42,9 +42,6 @@ const FanCurveCanvas: FC<Props> = memo(
 
     const selectedPoint = fanCurveState.selectedDragPoint;
 
-    console.log("dragPoint", fanCurveState.currentDragPoint);
-    console.log("selectedPoint", selectedPoint);
-
     const selPointTemp = selectedPoint?.temperature || 0;
     const selPointSpeed = selectedPoint?.fanRPMpercent || 0;
 
@@ -325,11 +322,16 @@ const FanCurveCanvas: FC<Props> = memo(
           break;
         }
         case FANMODE.CURVE: {
-          const newDragPoint = fanClickPos;
+          const newDragPoint = new fanPosition(
+            fanClickPos.temperature,
+            fanClickPos.fanRPMpercent
+          );
           const newSelectedPoint = new fanPosition(
             Math.trunc(fanClickPos.temperature),
             Math.trunc(fanClickPos.fanRPMpercent)
           );
+
+          console.log(newDragPoint, newSelectedPoint);
 
           setCurrentDragPointAndSelectedPoint({
             dragPoint: newDragPoint,

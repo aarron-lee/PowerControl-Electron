@@ -5,14 +5,14 @@ export interface FanCanvasProps {
   width: number;
   height: number;
   style: any;
-  initDraw?(canvasRef: any): void;
-  onPointerDown?(position: any): void;
-  onPointerMove?(position: any): void;
-  onPointerUp?(position: any): void;
-  onPointerShortPress?(position: any): void;
-  onPointerLongPress?(position: any): void;
-  onPointerDragDown?(position: any): boolean;
-  onPointerDraging?(position: any): void;
+  initDraw?: (canvasRef: any) => void;
+  onPointerDown?: (position: any) => void;
+  onPointerMove?: (position: any) => void;
+  onPointerUp?: (position: any) => void;
+  onPointerShortPress?: (position: any) => void;
+  onPointerLongPress?: (position: any) => void;
+  onPointerDragDown?: (position: any) => boolean;
+  onPointerDraging?: (position: any) => void;
 }
 export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   const pointerDownPos: any = useRef(null);
@@ -22,7 +22,7 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
   const pointerIsDrag = useRef(false);
   const canvasRef: any = useRef(null);
   useEffect(() => {
-    canvas.initDraw?.call(canvas, canvasRef.current);
+    if (canvas && canvas.initDraw) canvas.initDraw(canvasRef.current);
   }, []);
 
   // function getMousePos(canvas, evt) {
@@ -43,7 +43,9 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
     );
     pointerDownPos.current = [realEvent.offsetX, realEvent.offsetY];
     pointerDownTime.current = Date.parse(new Date().toString());
-    canvas.onPointerDown?.call(canvas, fanClickPos);
+    if (canvas && canvas.onPointerDown) {
+      canvas.onPointerDown(fanClickPos);
+    }
     onDragDown(e);
   }
   function onPointerUp(e: any): void {
@@ -56,7 +58,9 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
     );
     pointerUpPos.current = [realEvent.offsetX, realEvent.offsetY];
     pointerUpTime.current = Date.parse(new Date().toString());
-    canvas.onPointerUp?.call(canvas, fanClickPos);
+    if (canvas && canvas.onPointerUp) {
+      canvas.onPointerUp(fanClickPos);
+    }
     //call PointPressEvent
     if (
       approximatelyEqual(
@@ -101,7 +105,8 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       canvas.width,
       canvas.height
     );
-    canvas.onPointerShortPress?.call(canvas, fanClickPos);
+    if (canvas && canvas.onPointerShortPress)
+      canvas.onPointerShortPress(fanClickPos);
   }
   //@ts-ignore
   function onPointLongPress(e: any): void {}
@@ -113,10 +118,9 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       canvas.width,
       canvas.height
     );
-    pointerIsDrag.current = canvas.onPointerDragDown?.call(
-      canvas,
-      fanClickPos
-    )!!;
+    if (canvas && canvas.onPointerDragDown) {
+      pointerIsDrag.current = canvas.onPointerDragDown(fanClickPos);
+    }
   }
   function onDraging(e: any): void {
     const realEvent: any = e.nativeEvent;
@@ -126,7 +130,9 @@ export const FanCanvas: FC<FanCanvasProps> = (canvas) => {
       canvas.width,
       canvas.height
     );
-    canvas.onPointerDraging?.call(canvas, fanClickPos);
+    if (canvas && canvas.onPointerDraging) {
+      canvas.onPointerDraging(fanClickPos);
+    }
   }
   const { width, height, style } = canvas;
   return (
