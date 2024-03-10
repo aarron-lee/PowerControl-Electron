@@ -3,6 +3,7 @@ import { FanCanvas } from "./fanCanvas";
 import { FANMODE } from "../util";
 import { getTextPosByCanvasPos, fanPosition } from "../util/position";
 import { useFanCurveReducer } from "./FanCurveCanvas/fanCurveReducer";
+import { cloneDeep } from "lodash";
 
 const totalLines = 9;
 const lineColor = "#1E90FF";
@@ -16,6 +17,7 @@ type Props = {
   fixSpeed: number;
   snapToGrid: boolean;
   curvePoints: any[];
+  currentTemperaturePosition?: fanPosition;
   setCurvePoints: (newCurvePoints: any[]) => void;
   disableDrag?: boolean;
   setFixSpeed: (speed: number) => any;
@@ -28,6 +30,7 @@ const FanCurveCanvas: FC<Props> = memo(
     fixSpeed,
     snapToGrid,
     setCurvePoints,
+    currentTemperaturePosition,
     setFixSpeed,
     disableDrag = false,
   }) => {
@@ -119,7 +122,7 @@ const FanCurveCanvas: FC<Props> = memo(
       const ctx = canvas?.getContext("2d");
       const width: number = ctx.canvas.width;
       const height: number = ctx.canvas.height;
-      const updatedCurvePoints = curvePoints.sort(
+      let updatedCurvePoints = curvePoints.sort(
         (a: fanPosition, b: fanPosition) => {
           return a.temperature == b.temperature
             ? a.fanRPMpercent!! - b.fanRPMpercent!!
@@ -129,7 +132,18 @@ const FanCurveCanvas: FC<Props> = memo(
 
       setCurvePoints(updatedCurvePoints);
 
-      //绘制线段
+      if (currentTemperaturePosition) {
+        updatedCurvePoints = cloneDeep(updatedCurvePoints);
+        updatedCurvePoints.push(currentTemperaturePosition);
+
+        updatedCurvePoints = updatedCurvePoints.sort(
+          (a: fanPosition, b: fanPosition) => {
+            return a.temperature == b.temperature
+              ? a.fanRPMpercent!! - b.fanRPMpercent!!
+              : a.temperature!! - b.temperature!!;
+          }
+        );
+      }
       ctx.beginPath();
       ctx.moveTo(0, height);
       ctx.strokeStyle = lineColor;
@@ -151,7 +165,10 @@ const FanCurveCanvas: FC<Props> = memo(
           height
         );
         ctx.beginPath();
-        ctx.fillStyle = curvePoint == selectedPoint ? selectColor : pointColor;
+        ctx.fillStyle =
+          curvePoint == selectedPoint || curvePoint.isCurrentTemp
+            ? selectColor
+            : pointColor;
         ctx.arc(pointCanvasPos[0], pointCanvasPos[1], 8, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
@@ -169,7 +186,13 @@ const FanCurveCanvas: FC<Props> = memo(
 
     useEffect(() => {
       refreshCanvas();
-    }, [snapToGrid, fanMode, fixSpeed, curvePoints]);
+    }, [
+      snapToGrid,
+      fanMode,
+      fixSpeed,
+      curvePoints,
+      currentTemperaturePosition,
+    ]);
 
     useEffect(() => {
       if (selectedPoint) refreshCanvas();

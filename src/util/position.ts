@@ -1,11 +1,25 @@
+import { useSelector } from "react-redux";
+import {
+  FanCurvePoint,
+  selectActiveProfile,
+  selectCurrentTemp,
+} from "../redux-modules/fanSlice";
+import { cloneDeep } from "lodash";
+import { useMemo } from "react";
+
 export class fanPosition {
   temperature?: number;
   fanRPMpercent?: number;
+  isCurrentTemp?: boolean;
   static tempMax: number = 100;
   static fanMax: number = 100;
   static fanMin: number = 0;
   static tempMin: number = 0;
-  constructor(temperature: number, fanRPMpercent: number) {
+  constructor(
+    temperature: number,
+    fanRPMpercent: number,
+    isCurrentTemp: boolean = false
+  ) {
     this.fanRPMpercent = Math.min(
       Math.max(fanRPMpercent, fanPosition.fanMin),
       fanPosition.fanMax
@@ -14,6 +28,7 @@ export class fanPosition {
       Math.max(temperature, fanPosition.tempMin),
       fanPosition.tempMax
     );
+    this.isCurrentTemp = isCurrentTemp;
   }
   public getCanvasPos(canWidth: number, canHeight: number) {
     var canPosx = Math.min(
@@ -77,15 +92,70 @@ export const getTextPosByCanvasPos = (
   return [canPosx + offsetX, canPosy + offsetY];
 };
 
+export const useCurrentTempPosition = () => {
+  const currentTemp = useSelector(selectCurrentTemp);
+  const activeProfile = useSelector(selectActiveProfile);
+
+  const currentTempPosition = useMemo(() => {
+    if (!currentTemp || currentTemp < 0) return;
+
+    if (activeProfile.profileName && currentTemp) {
+      const { fanProfile } = activeProfile;
+
+      const pts = fanProfile.curvePoints
+        ? cloneDeep(fanProfile.curvePoints)
+        : [];
+
+      pts.push({ temperature: 0, fanRPMpercent: 0 });
+      pts.push({ temperature: 100, fanRPMpercent: 100 });
+
+      const sortedPoints = pts.sort((a, b) => {
+        return a.temperature == b.temperature
+          ? a.fanRPMpercent!! - b.fanRPMpercent!!
+          : a.temperature!! - b.temperature!!;
+      });
+
+      let lowerBound: FanCurvePoint | undefined;
+      let upperBound: FanCurvePoint | undefined;
+
+      for (let i = 0; i < sortedPoints.length - 1; i++) {
+        if (
+          sortedPoints[i].temperature < currentTemp &&
+          sortedPoints[i + 1].temperature > currentTemp
+        ) {
+          lowerBound = sortedPoints[i];
+          upperBound = sortedPoints[i + 1];
+          break;
+        }
+      }
+
+      if (lowerBound && upperBound) {
+        const currentTempPoint = calPointInLine(
+          lowerBound,
+          upperBound,
+          currentTemp
+        );
+        if (currentTempPoint) {
+          const [temp, fanRPMpercent] = currentTempPoint;
+
+          return new fanPosition(temp, fanRPMpercent, true);
+        }
+      }
+    }
+  }, [currentTemp, activeProfile.fanProfile, activeProfile.profileName]);
+
+  return currentTempPosition;
+};
+
 export const calPointInLine = (
-  lineStart: fanPosition,
-  lineEnd: fanPosition,
-  calPointIndex: number
+  lineStart: FanCurvePoint,
+  lineEnd: FanCurvePoint,
+  currentTemp: number
 ) => {
   if (lineStart.temperature!! > lineEnd.temperature!!) return null;
   if (
-    calPointIndex < lineStart.temperature!! ||
-    calPointIndex > lineEnd.temperature!!
+    currentTemp < lineStart.temperature!! ||
+    currentTemp > lineEnd.temperature!!
   )
     return null;
   var deltaY = lineEnd.fanRPMpercent!! - lineStart.fanRPMpercent!!;
@@ -93,7 +163,7 @@ export const calPointInLine = (
   var calPointY =
     deltaX == 0
       ? deltaY
-      : (calPointIndex - lineStart.temperature!!) * (deltaY / deltaX) +
+      : (currentTemp - lineStart.temperature!!) * (deltaY / deltaX) +
         lineStart.fanRPMpercent!!;
-  return new fanPosition(calPointIndex, calPointY);
+  return [currentTemp, calPointY];
 };

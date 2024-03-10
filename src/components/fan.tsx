@@ -24,9 +24,8 @@ import {
 import FanCurveCanvas from "./FanCurveCanvas";
 import { useAppDispatch } from "../redux-modules/store";
 import FanTemp from "./FanTemp";
-import { isEqual } from "lodash";
-import { fanPosition } from "../util";
 import { useMemoizeCurvePoints } from "./FanCurveCanvas/hooks";
+import { useCurrentTempPosition } from "../util";
 
 const FanProfileDropdown: FC = () => {
   const activeProfileName = useSelector(selectActiveProfileName);
@@ -45,6 +44,10 @@ const FanProfileDropdown: FC = () => {
       profile,
     };
   });
+
+  if (options.length === 0) {
+    return <FormLabel>No Fan Profiles Available</FormLabel>;
+  }
 
   return (
     <Flex flexDirection="column">
@@ -84,6 +87,7 @@ export const FANDisplayComponent: FC = () => {
   const dispatch = useAppDispatch();
 
   const curvePoints = useMemoizeCurvePoints(fanProfile?.curvePoints);
+  const currentTempPosition = useCurrentTempPosition();
 
   const onChange = (newCurvePoints: any[]) => {
     if (profileName)
@@ -107,6 +111,7 @@ export const FANDisplayComponent: FC = () => {
       fixSpeed={fixSpeed}
       snapToGrid={snapToGrid}
       curvePoints={curvePoints}
+      currentTemperaturePosition={currentTempPosition}
       setCurvePoints={onChange}
       setFixSpeed={() => {}}
       // disableDrag
