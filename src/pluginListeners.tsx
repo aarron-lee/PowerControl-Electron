@@ -1,4 +1,9 @@
-import { fanSlice, selectActiveProfile } from "./redux-modules/fanSlice";
+import {
+  fanSlice,
+  selectActiveProfile,
+  selectFanEnabled,
+  selectFanIsAuto,
+} from "./redux-modules/fanSlice";
 import { store } from "./redux-modules/store";
 import { FANMODE, getCurrentTempPosition } from "./util";
 import { setFanIsAuto, setFanPercent } from "./util/api";
@@ -74,6 +79,18 @@ async function setFanPercentForTemp(currentTemp: number) {
   const state = store.getState();
 
   const { profileName, fanProfile } = selectActiveProfile(state);
+  const fanControlEnabled = selectFanEnabled(state);
+  const fanIsAuto = selectFanIsAuto(state);
+
+  if (!fanControlEnabled && !fanIsAuto) {
+    return setFanIsAuto(true);
+  } else if (fanControlEnabled && fanIsAuto) {
+    setFanIsAuto(false);
+  }
+
+  if (fanIsAuto) {
+    return;
+  }
 
   if (fanProfile) {
     const { fanMode, fixSpeed, curvePoints } = fanProfile;
