@@ -1,5 +1,7 @@
-import { fanSlice } from "./redux-modules/fanSlice";
+import { fanSlice, selectActiveProfile } from "./redux-modules/fanSlice";
 import { store } from "./redux-modules/store";
+import { FANMODE, getCurrentTempPosition } from "./util";
+import { setFanIsAuto, setFanPercent } from "./util/api";
 import { serverAPI } from "./util/serverApi";
 
 let powerControlListenerId: number | undefined;
@@ -49,6 +51,8 @@ async function getFanTemp() {
     fanTemp = result / 1000;
   }
 
+  setFanPercentForTemp(fanTemp);
+
   store.dispatch(fanSlice.actions.setCurrentFanTemp(fanTemp));
 }
 
@@ -64,4 +68,33 @@ async function getFanIsAuto() {
   }
 
   store.dispatch(fanSlice.actions.setFanIsAuto(fanIsAuto));
+}
+
+async function setFanPercentForTemp(currentTemp: number) {
+  const state = store.getState();
+
+  const { profileName, fanProfile } = selectActiveProfile(state);
+
+  if (fanProfile) {
+    const { fanMode, fixSpeed, curvePoints } = fanProfile;
+
+    if (fanMode === FANMODE.FIX) {
+      setFanPercent(fixSpeed);
+    } else if (fanMode === FANMODE.CURVE) {
+      const fanPosForTemp = getCurrentTempPosition(currentTemp, curvePoints);
+      if (fanPosForTemp) {
+        const { fanRPMpercent } = fanPosForTemp;
+        if (typeof fanRPMpercent === "number") {
+          setFanPercent(fanRPMpercent);
+        }
+      }
+    } else if (fanMode === FANMODE.NOCONTROL) {
+      // set isAuto to true
+      setFanIsAuto(true);
+    }
+    return;
+  }
+
+  // no fan profile, set isAuto
+  setFanIsAuto(true);
 }

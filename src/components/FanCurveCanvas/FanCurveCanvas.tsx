@@ -153,7 +153,7 @@ const FanCurveCanvas: FC<Props> = memo(
                 : a.temperature!! - b.temperature!!;
             }
           );
-          console.log(updatedCurvePoints);
+          // console.log(updatedCurvePoints);
         }
       }
       ctx.beginPath();
