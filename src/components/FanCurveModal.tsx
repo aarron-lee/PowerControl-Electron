@@ -34,7 +34,7 @@ const FanCurveModal: FC = () => {
       >
         {localizationManager.getString(localizeStrEnum.CREATE_FAN_PROFILE)}
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={"full"}>
         <ModalOverlay />
         <ModalContent>
           <CreateFanModal closeModal={onClose} />
@@ -202,6 +202,7 @@ function CreateFanModal({ closeModal }: { closeModal: () => void }) {
           onClick={() => {
             closeModal();
           }}
+          marginRight={10}
         >
           {localizationManager.getString(localizeStrEnum.CANCEL)}
         </Button>

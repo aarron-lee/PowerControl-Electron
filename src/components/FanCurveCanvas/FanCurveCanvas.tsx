@@ -380,7 +380,7 @@ const FanCurveCanvas: FC<Props> = memo(
     }
     return (
       <>
-        <div>
+        <div style={{ margin: 15 }}>
           <FanCanvas
             width={300}
             height={300}
