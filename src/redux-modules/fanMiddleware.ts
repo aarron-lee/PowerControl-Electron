@@ -1,3 +1,4 @@
+import { setFanIsAuto } from "../util/api";
 import { SETTINGS_KEY } from "./constants";
 import { fanSlice } from "./fanSlice";
 
@@ -20,11 +21,16 @@ const saveToLocalStorage = (state: any) => {
 
 export const saveFanSettingsMiddleware =
   (store: any) => (next: any) => (action: any) => {
+    const { type, payload } = action;
     const result = next(action);
 
     const state = store.getState();
 
     if (MUTATING_ACTION_TYPES.includes(action.type)) {
       saveToLocalStorage(state);
+    }
+
+    if (type === fanSlice.actions.setEnabled) {
+      setFanIsAuto(!payload);
     }
   };
