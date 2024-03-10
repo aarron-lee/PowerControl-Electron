@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { FC } from "react";
-import { fanPosition } from "../util";
+import { fanPosition } from "../../util";
 export interface FanCanvasProps {
   width: number;
   height: number;

@@ -1,6 +1,5 @@
-import { FanCurvePoint, selectActiveProfile } from "../redux-modules/fanSlice";
+import { FanCurvePoint } from "../redux-modules/fanSlice";
 import { cloneDeep } from "lodash";
-import { store } from "../redux-modules/store";
 
 export class fanPosition {
   temperature?: number;

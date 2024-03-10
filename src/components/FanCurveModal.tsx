@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { useAppDispatch } from "../redux-modules/store";
 import { FanProfile, fanSlice } from "../redux-modules/fanSlice";
-import FanCurveCanvas from "./FanCurveCanvas";
+import FanCurveCanvas from "./FanCurveCanvas/FanCurveCanvas";
 
 const FanCurveModal: FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

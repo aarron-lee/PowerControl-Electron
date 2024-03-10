@@ -1,12 +1,12 @@
 import { FC, useRef, useEffect, memo } from "react";
 import { FanCanvas } from "./fanCanvas";
-import { FANMODE } from "../util";
+import { FANMODE } from "../../util";
 import {
   getTextPosByCanvasPos,
   fanPosition,
   getCurrentTempPosition,
-} from "../util/position";
-import { useFanCurveReducer } from "./FanCurveCanvas/fanCurveReducer";
+} from "../../util/position";
+import { useFanCurveReducer } from "./fanCurveReducer";
 import { cloneDeep } from "lodash";
 
 const totalLines = 9;

@@ -21,7 +21,7 @@ import {
   selectCurrentTemp,
   selectFanEnabled,
 } from "../redux-modules/fanSlice";
-import FanCurveCanvas from "./FanCurveCanvas";
+import FanCurveCanvas from "./FanCurveCanvas/FanCurveCanvas";
 import { useAppDispatch } from "../redux-modules/store";
 import FanTemp from "./FanTemp";
 import { useMemoizeCurvePoints } from "./FanCurveCanvas/hooks";
