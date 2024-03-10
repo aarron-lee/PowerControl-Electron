@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Flex,
@@ -14,18 +14,17 @@ import FanRpm from "./FanRpm";
 import FanCurveModal from "./FanCurveModal";
 import { useSelector } from "react-redux";
 import {
-  FanCurvePoint,
   fanSlice,
   selectActiveProfile,
   selectActiveProfileName,
   selectAllProfiles,
+  selectCurrentTemp,
   selectFanEnabled,
 } from "../redux-modules/fanSlice";
 import FanCurveCanvas from "./FanCurveCanvas";
 import { useAppDispatch } from "../redux-modules/store";
 import FanTemp from "./FanTemp";
 import { useMemoizeCurvePoints } from "./FanCurveCanvas/hooks";
-import { useCurrentTempPosition } from "../util";
 
 const FanProfileDropdown: FC = () => {
   const activeProfileName = useSelector(selectActiveProfileName);
@@ -87,7 +86,7 @@ export const FANDisplayComponent: FC = () => {
   const dispatch = useAppDispatch();
 
   const curvePoints = useMemoizeCurvePoints(fanProfile?.curvePoints);
-  const currentTempPosition = useCurrentTempPosition();
+  const currentTemp = useSelector(selectCurrentTemp);
 
   const onChange = (newCurvePoints: any[]) => {
     if (profileName)
@@ -111,7 +110,7 @@ export const FANDisplayComponent: FC = () => {
       fixSpeed={fixSpeed}
       snapToGrid={snapToGrid}
       curvePoints={curvePoints}
-      currentTemperaturePosition={currentTempPosition}
+      currentTemp={currentTemp}
       setCurvePoints={onChange}
       setFixSpeed={() => {}}
       // disableDrag

@@ -19,9 +19,13 @@ export const powerControlPluginListener = () => {
 };
 
 async function fetchData() {
-  await getFanRPM();
-  await getFanTemp();
-  await getFanIsAuto();
+  try {
+    await getFanRPM();
+    await getFanTemp();
+    await getFanIsAuto();
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 async function getFanRPM() {

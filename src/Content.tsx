@@ -11,9 +11,9 @@ const Content: FC<{}> = ({}) => {
 
   useAppInitialize();
 
-  // if (initialLoading) {
-  //   return null;
-  // }
+  if (initialLoading) {
+    return null;
+  }
 
   return (
     <div>
@@ -28,13 +28,13 @@ function useAppInitialize() {
 
   useEffect(() => {
     dispatch(fanSlice.actions.loadLocalStorage());
-    // const unsubscribe = powerControlPluginListener();
+    const unsubscribe = powerControlPluginListener();
 
-    // initialFetch(dispatch);
+    initialFetch(dispatch);
 
-    // return () => {
-    //   unsubscribe();
-    // };
+    return () => {
+      unsubscribe();
+    };
   }, []);
 }
 

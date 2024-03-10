@@ -1,7 +1,11 @@
 import { FC, useRef, useEffect, memo } from "react";
 import { FanCanvas } from "./fanCanvas";
 import { FANMODE } from "../util";
-import { getTextPosByCanvasPos, fanPosition } from "../util/position";
+import {
+  getTextPosByCanvasPos,
+  fanPosition,
+  getCurrentTempPosition,
+} from "../util/position";
 import { useFanCurveReducer } from "./FanCurveCanvas/fanCurveReducer";
 import { cloneDeep } from "lodash";
 
@@ -17,7 +21,7 @@ type Props = {
   fixSpeed: number;
   snapToGrid: boolean;
   curvePoints: any[];
-  currentTemperaturePosition?: fanPosition;
+  currentTemp?: number;
   setCurvePoints: (newCurvePoints: any[]) => void;
   disableDrag?: boolean;
   setFixSpeed: (speed: number) => any;
@@ -30,7 +34,7 @@ const FanCurveCanvas: FC<Props> = memo(
     fixSpeed,
     snapToGrid,
     setCurvePoints,
-    currentTemperaturePosition,
+    currentTemp,
     setFixSpeed,
     disableDrag = false,
   }) => {
@@ -132,31 +136,47 @@ const FanCurveCanvas: FC<Props> = memo(
 
       setCurvePoints(updatedCurvePoints);
 
-      if (currentTemperaturePosition) {
-        updatedCurvePoints = cloneDeep(updatedCurvePoints);
-        updatedCurvePoints.push(currentTemperaturePosition);
-
-        updatedCurvePoints = updatedCurvePoints.sort(
-          (a: fanPosition, b: fanPosition) => {
-            return a.temperature == b.temperature
-              ? a.fanRPMpercent!! - b.fanRPMpercent!!
-              : a.temperature!! - b.temperature!!;
-          }
+      if (typeof currentTemp === "number") {
+        const currentTempPosition = getCurrentTempPosition(
+          currentTemp,
+          updatedCurvePoints
         );
+
+        if (currentTempPosition) {
+          updatedCurvePoints = cloneDeep(updatedCurvePoints);
+          updatedCurvePoints.push(currentTempPosition);
+
+          updatedCurvePoints = updatedCurvePoints.sort(
+            (a: fanPosition, b: fanPosition) => {
+              return a.temperature == b.temperature
+                ? a.fanRPMpercent!! - b.fanRPMpercent!!
+                : a.temperature!! - b.temperature!!;
+            }
+          );
+          console.log(updatedCurvePoints);
+        }
       }
       ctx.beginPath();
       ctx.moveTo(0, height);
       ctx.strokeStyle = lineColor;
-      for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
-        var curvePoint = curvePoints[pointIndex];
+      for (
+        let pointIndex = 0;
+        pointIndex < updatedCurvePoints.length;
+        pointIndex++
+      ) {
+        var curvePoint = updatedCurvePoints[pointIndex];
         var pointCanvasPos = curvePoint.getCanvasPos(width, height);
         ctx.lineTo(pointCanvasPos[0], pointCanvasPos[1]);
         ctx.moveTo(pointCanvasPos[0], pointCanvasPos[1]);
       }
       ctx.lineTo(width, 0);
       ctx.stroke();
-      for (let pointIndex = 0; pointIndex < curvePoints.length; pointIndex++) {
-        var curvePoint = curvePoints[pointIndex];
+      for (
+        let pointIndex = 0;
+        pointIndex < updatedCurvePoints.length;
+        pointIndex++
+      ) {
+        var curvePoint = updatedCurvePoints[pointIndex];
         var pointCanvasPos = curvePoint.getCanvasPos(width, height);
         var textPox = getTextPosByCanvasPos(
           pointCanvasPos[0],
@@ -166,7 +186,7 @@ const FanCurveCanvas: FC<Props> = memo(
         );
         ctx.beginPath();
         ctx.fillStyle =
-          curvePoint == selectedPoint || curvePoint.isCurrentTemp
+          curvePoint == selectedPoint || curvePoint.temperature == currentTemp
             ? selectColor
             : pointColor;
         ctx.arc(pointCanvasPos[0], pointCanvasPos[1], 8, 0, Math.PI * 2);
@@ -186,13 +206,7 @@ const FanCurveCanvas: FC<Props> = memo(
 
     useEffect(() => {
       refreshCanvas();
-    }, [
-      snapToGrid,
-      fanMode,
-      fixSpeed,
-      curvePoints,
-      currentTemperaturePosition,
-    ]);
+    }, [snapToGrid, fanMode, fixSpeed, curvePoints, currentTemp]);
 
     useEffect(() => {
       if (selectedPoint) refreshCanvas();
@@ -354,8 +368,6 @@ const FanCurveCanvas: FC<Props> = memo(
             Math.trunc(fanClickPos.fanRPMpercent)
           );
 
-          console.log(newDragPoint, newSelectedPoint);
-
           setCurrentDragPointAndSelectedPoint({
             dragPoint: newDragPoint,
             selectedPoint: newSelectedPoint,
@@ -409,5 +421,4 @@ const FanCurveCanvas: FC<Props> = memo(
     );
   }
 );
-
 export default FanCurveCanvas;
