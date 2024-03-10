@@ -22,7 +22,9 @@
     "appId": "com.aarron-lee.powercontrol-electron",
     "productName": "PowerControl Electron",
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "icon/android-chrome-512x512.png",
+      "category": "game"
     }
   },
   "files": [
