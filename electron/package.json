@@ -20,6 +20,8 @@
   },
   "build": {
     "appId": "com.aarron-lee.powercontrol-electron",
+    "executableName": "powercontrol-electron",
+    "artifactName": "powercontrol-electron.${ext}",
     "productName": "PowerControl Electron",
     "linux": {
       "target": "AppImage",
