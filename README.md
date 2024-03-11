@@ -6,11 +6,15 @@ This frontend only has the fan curve management functionality, none of the TDP-r
 
 You can try to use it with the main PowerControl plugin, but no guarantees on if it will work well.
 
+![app](./images/app.png)
+
+# Requirements
+
+Decky Loader and PowerControl Fork installed
+
 # Features
 
 Fan curve management (Note Fan curves are separate from the PowerControl Fan curves in the plugin)
-
-![app](./images/app.png)
 
 Tray Icon with `Toggle Window` and `Quit` options:
 
