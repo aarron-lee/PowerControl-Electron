@@ -16,7 +16,7 @@ export const powerControlPluginListener = () => {
 
   powerControlListenerId = window.setInterval(async () => {
     fetchData();
-  }, 3000);
+  }, 2000);
 
   return () => {
     if (powerControlListenerId) {
@@ -28,8 +28,8 @@ export const powerControlPluginListener = () => {
 async function fetchData() {
   try {
     await getFanRPM();
-    await getFanTemp();
     await getFanIsAuto();
+    await getFanTemp();
   } catch (e) {
     console.error(e);
   }
