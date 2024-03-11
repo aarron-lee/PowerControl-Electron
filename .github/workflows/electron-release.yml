@@ -61,7 +61,7 @@ jobs:
       - name: publish to github release
         uses: softprops/action-gh-release@v1
         with:
-          files: /tmp/artifacts/PowerControl-Electron/powercontrol-electron.AppImage
+          files: /tmp/artifacts/powercontrol-electron/powercontrol-electron.AppImage
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           draft: true
