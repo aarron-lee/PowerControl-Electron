@@ -33,3 +33,4 @@ electron/*
 !electron/icon512.png
 !electron/icon
 !electron/favicon
+!electron/settings.js
