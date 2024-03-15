@@ -4,13 +4,15 @@ Based on Powercontrol frontend, intended to only be used with my [PowerControl f
 
 This frontend only has the fan curve management functionality, none of the TDP-related functionality.
 
-You can try to use it with the main PowerControl plugin, but no guarantees on if it will work well.
+This will NOT work with the main PowerControl plugin
 
 ![app](./images/app.png)
 
 # Requirements
 
 Decky Loader and PowerControl Fork installed
+
+-requires PowerControl Fork v2.0.9
 
 # Features
 
