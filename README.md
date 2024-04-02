@@ -31,6 +31,6 @@ created for my own personal use, I will not provide any support. This software i
 
 # Attribution
 
-favicon ([cc-by4.0 license](https://creativecommons.org/licenses/by/4.0/)) - https://favicon.io/emoji-favicons/video-game/
+favicon ([cc-by4.0 license](https://creativecommons.org/licenses/by/4.0/)) - https://favicon.io/emoji-favicons/chart-increasing
 
 [PowerControl Decky Plugin](https://github.com/mengmeet/PowerControl)
