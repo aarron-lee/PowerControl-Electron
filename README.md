@@ -12,7 +12,7 @@ This will NOT work with the main PowerControl plugin
 
 Decky Loader and PowerControl Fork installed
 
--requires PowerControl Fork v2.0.9
+- requires PowerControl Fork v2.0.9
 
 # Features
 
@@ -24,6 +24,16 @@ Tray Icon with `Toggle Window` and `Quit` options:
 2. `Quit` option quits the app
 
 On KDE, right click the tray icon to see options. On Gnome, you need to enable a gnome extension for icons first.
+
+# Installation
+
+The Desktop app requires [PowerControl fork](https://github.com/aarron-lee/PowerControl). v2.0.9 to be installed. You can install v2.0.9 via the following command:
+
+```
+curl -L https://github.com/aarron-lee/PowerControl/raw/main/install.sh | VERSION_TAG=v2.0.9 sh
+```
+
+After installing the correct PowerControl version, you can download the latest Desktop AppImage from [releases](https://github.com/aarron-lee/PowerControl-Electron/releases), and install it with either [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever) or [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
 
 # Disclaimer
 
