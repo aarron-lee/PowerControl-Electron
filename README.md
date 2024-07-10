@@ -1,22 +1,20 @@
-# PowerControl Electron Frontend
+# PowerControl Electron
 
-Based on Powercontrol frontend, intended to only be used with my [PowerControl fork](https://github.com/aarron-lee/PowerControl).
+Electron UI for PowerControl, intended to only be used with my [PowerControl fork](https://github.com/aarron-lee/PowerControl) + [unofficial decky loader](https://github.com/aarron-lee/decky-loader).
 
-This frontend only has the fan curve management functionality, none of the TDP-related functionality.
-
-This will NOT work with the main PowerControl plugin
+This frontend only has the fan curve management functionality, none of the TDP, CPU, or GPU related functionality.
 
 ![app](./images/app.png)
 
 # Requirements
 
-Decky Loader and PowerControl Fork installed
+Unofficial Decky Loader and PowerControl Fork v2.1.0 or v2.0.9 installed to unofficial decky.
 
-- requires PowerControl Fork v2.1.0
+- note, unofficial decky can be used alongside regular decky, it does not interfere with regular Decky Loader.
 
 # Features
 
-Fan curve management (Note Fan curves are separate from the PowerControl Fan curves in the plugin)
+Fan curve management (Note Fan curves in the desktop app are separate from the PowerControl Fan curves in the Steam Game mode plugin)
 
 Tray Icon with `Toggle Window` and `Quit` options:
 
@@ -27,10 +25,16 @@ On KDE, right click the tray icon to see options. On Gnome, you need to enable a
 
 # Installation
 
-The Desktop app requires [PowerControl fork](https://github.com/aarron-lee/PowerControl). v2.1.0 to be installed. You can install v2.1.0 via the following command:
+If not already installed, install unofficial decky
 
 ```
-curl -L https://github.com/aarron-lee/PowerControl/raw/main/install.sh | VERSION_TAG=v2.1.0 sh
+curl -L https://raw.githubusercontent.com/aarron-lee/decky-loader/main/dist/install_release.sh | sh
+```
+
+Then install the PowerControl fork to unofficial decky
+
+```
+curl -L https://raw.githubusercontent.com/aarron-lee/PowerControl-Electron/main/unofficial_powercontrol_install.sh | sh
 ```
 
 After installing the correct PowerControl version, you can download the latest Desktop AppImage from [releases](https://github.com/aarron-lee/PowerControl-Electron/releases), and install it with either [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever) or [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
