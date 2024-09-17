@@ -34,3 +34,4 @@ electron/*
 !electron/icon
 !electron/favicon
 !electron/settings.js
+!electron/tag_release.sh
